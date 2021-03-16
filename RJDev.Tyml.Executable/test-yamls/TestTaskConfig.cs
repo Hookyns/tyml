@@ -2,7 +2,7 @@ using System.Collections.Generic;
 
 namespace RJDev.Tyml.Executable
 {
-    public class CmdTaskConfig
+    public class TestTaskConfig
     {
         public string Script { get; set; }
 

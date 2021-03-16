@@ -12,6 +12,7 @@
 		<PackageReference Include="Microsoft.Extensions.Hosting" Version="5.0.0" />
 		<PackageReference Include="RJDev.Core.Extensibility" Version="1.0.0" />
 		<PackageReference Include="RJDev.Core.Reflection" Version="1.0.0" />
+		<PackageReference Include="RJDev.Tyml.Core" Version="1.1.1" />
 		<PackageReference Include="Serilog" Version="2.10.0" />
 		<PackageReference Include="Serilog.Extensions.Hosting" Version="4.1.2" />
 		<PackageReference Include="Serilog.Formatting.Compact" Version="1.1.0" />
@@ -21,16 +22,16 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <ProjectReference Include="..\RJDev.Tyml.Core\RJDev.Tyml.Core.csproj" />
-	</ItemGroup>
-
-	<ItemGroup>
 	  <None Update="test-yamls\1.yml">
 	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
 	  </None>
 	  <None Update="test-yamls\2.yml">
 	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
 	  </None>
+	</ItemGroup>
+
+	<ItemGroup>
+	  <ProjectReference Include="..\RJDev.Tyml.Tasks.Basic\RJDev.Tyml.Tasks.Basic.csproj" />
 	</ItemGroup>
 
 </Project>

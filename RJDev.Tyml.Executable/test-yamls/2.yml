@@ -6,7 +6,7 @@ variables:
     with: colon
 
 steps:
-    - task: Cmd
+    - task: Test
       displayName: "Seeding"
       inputs:
         Script: "Inf.CoBis.SeedRunner.exe"
@@ -18,3 +18,8 @@ steps:
           SqlPassword: $(SqlServer.Password)
           ProjectDescription: '$(ProjectDescription)'
           FooVariable: $(foo)!
+          
+    - task: Cmd
+      displayName: "Echo"
+      inputs:
+        Script: 'echo Hello World'

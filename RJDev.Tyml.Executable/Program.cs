@@ -6,14 +6,16 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using RJDev.Core.Extensibility;
 using RJDev.Tyml.Core;
+using RJDev.Tyml.Core.Tasks;
+using RJDev.Tyml.Tasks.Basic.Cmd;
+using RJDev.Tyml.Tasks.Basic.ExtractFile;
 using Serilog;
 using Serilog.Events;
 using Serilog.Formatting.Compact;
 
 namespace RJDev.Tyml.Executable
 {
-    // ReSharper disable once ClassNeverInstantiated.Global
-    class Program
+    internal static class Program
     {
         private static readonly string AppPath = AppContext.BaseDirectory;
 
@@ -53,7 +55,7 @@ namespace RJDev.Tyml.Executable
             string ymlContent = await File.ReadAllTextAsync(ymlPath);
 
             TymlContext tymlContext = new TymlContextBuilder()
-                .UseTasks(typeof(CmdTask))
+                .UseTasks(typeof(TestTask), typeof(CmdTask), typeof(ExtractFilesTask))
                 .UseWorkingDirectory(path)
                 .WithBaseVariables(new Dictionary<string, object>()
                 {
@@ -86,7 +88,10 @@ namespace RJDev.Tyml.Executable
                     .ConfigureServices((hostContext, services) =>
                     {
                         services.AddSingleton<TymlExecutor>();
+                        
+                        services.AddTransient<TestTask>();
                         services.AddTransient<CmdTask>();
+                        services.AddTransient<ExtractFilesTask>();
                     })
                     // .UseContentRoot(AppContext.BaseDirectory);
                     .UseConsoleLifetime()
