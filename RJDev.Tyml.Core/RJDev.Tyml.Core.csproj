@@ -6,11 +6,10 @@
 		<Authors>Roman Jámbor</Authors>
 		<Company>Roman Jámbor</Company>
 		<Description>Library which is able to take YAML file in given format and process its instructions. It is like Your private local pipeline.</Description>
-		<RepositoryUrl>https://github.com/Hookyns/remy</RepositoryUrl>
+		<RepositoryUrl>https://github.com/Hookyns/tyml</RepositoryUrl>
 	</PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="RJDev.Core.Command" Version="1.0.0" />
 		<PackageReference Include="YamlDotNet" Version="9.1.4" />
 	</ItemGroup>
 

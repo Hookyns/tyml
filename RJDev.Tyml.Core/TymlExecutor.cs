@@ -1,6 +1,5 @@
 using System;
 using System.Threading.Tasks;
-using Microsoft.Extensions.DependencyInjection;
 using RJDev.Tyml.Core.Yml;
 
 namespace RJDev.Tyml.Core
@@ -40,7 +39,7 @@ namespace RJDev.Tyml.Core
             foreach (TaskConfiguration step in config.Steps)
             {
                 Type taskType = context.GetTask(step.Task);
-                ITask task = (ITask)this.serviceProvider.GetRequiredService(taskType);
+                ITask task = (ITask)(this.serviceProvider.GetService(taskType) ?? throw new InvalidOperationException($"Required service '{taskType.FullName}' not registered."));
                 await task.Execute(new TaskContext(context, config.Variables), step.Inputs);
             }
         }
