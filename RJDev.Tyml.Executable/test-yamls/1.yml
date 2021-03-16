@@ -1,0 +1,32 @@
+description: "Aktualizace DB"
+steps:
+    - task: SqlCmd
+      displayName: "Migrace"
+      inputs:
+        File: ./migration.sql
+        ServerName: $(SqlServer.Host)
+        DatabaseName: CoBis
+        SqlUsername: $(SqlServer.Username)
+        SqlPassword: $(SqlServer.Password)
+
+    - task: Cmd
+      displayName: "Seeding"
+      inputs:
+        Script: "Inf.CoBis.SeedRunner.exe"
+        Args:
+          Customer: $(Customer.Identifier)
+          ServerName: $(SqlServer.Host)
+          DatabaseName: CoBis
+          SqlUsername: $(SqlServer.Username)
+          SqlPassword: $(SqlServer.Password)
+
+    - task: Test
+      displayName: 'Complex test'
+      inputs:
+        Args:
+          - arg1: Test
+          - arg2: Test
+          - arg3:
+              Foo: bar
+              Baz: 5
+              

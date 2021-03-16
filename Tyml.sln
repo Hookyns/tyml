@@ -1,0 +1,28 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RJDev.Tyml.Executable", "RJDev.Tyml.Executable\RJDev.Tyml.Executable.csproj", "{3E47E9E0-A69D-4A17-97A5-081B23ED4B3C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RJDev.Tyml.Core", "RJDev.Tyml.Core\RJDev.Tyml.Core.csproj", "{0AB6EDEE-891B-416F-9D20-CF4CE54427D7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RJDev.Tyml.BaseTasks", "RJDev.Tyml.BaseTasks\RJDev.Tyml.BaseTasks.csproj", "{F9405C2F-10DB-4BCD-A4F3-9C67E3C60620}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{3E47E9E0-A69D-4A17-97A5-081B23ED4B3C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3E47E9E0-A69D-4A17-97A5-081B23ED4B3C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3E47E9E0-A69D-4A17-97A5-081B23ED4B3C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3E47E9E0-A69D-4A17-97A5-081B23ED4B3C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0AB6EDEE-891B-416F-9D20-CF4CE54427D7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0AB6EDEE-891B-416F-9D20-CF4CE54427D7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0AB6EDEE-891B-416F-9D20-CF4CE54427D7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0AB6EDEE-891B-416F-9D20-CF4CE54427D7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F9405C2F-10DB-4BCD-A4F3-9C67E3C60620}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F9405C2F-10DB-4BCD-A4F3-9C67E3C60620}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F9405C2F-10DB-4BCD-A4F3-9C67E3C60620}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F9405C2F-10DB-4BCD-A4F3-9C67E3C60620}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal

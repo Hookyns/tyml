@@ -1,0 +1,20 @@
+description: "Aktualizace DB"
+variables:
+  ProjectDescription: |- # "|" means Keep line wraps; "-" means no line wraps at end; https://yaml-multiline.info
+    This is testing multiline project description.
+    This is second line of it.
+    with: colon
+
+steps:
+    - task: Cmd
+      displayName: "Seeding"
+      inputs:
+        Script: "Inf.CoBis.SeedRunner.exe"
+        Args:
+          Customer: $(Customer.Identifier)
+          ServerName: $(SqlServer.Host)
+          DatabaseName: CoBis
+          SqlUsername: $(SqlServer.Username)
+          SqlPassword: $(SqlServer.Password)
+          ProjectDescription: '$(ProjectDescription)'
+          FooVariable: $(foo)!
