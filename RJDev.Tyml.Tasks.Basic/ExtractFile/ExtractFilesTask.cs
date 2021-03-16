@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.IO.Compression;
+using System.Threading;
 using System.Threading.Tasks;
 using RJDev.Tyml.Core;
 using RJDev.Tyml.Core.Tasks;
@@ -10,7 +11,7 @@ namespace RJDev.Tyml.Tasks.Basic.ExtractFile
     [TymlTask("ExtractFiles")]
     public class ExtractFilesTask : TaskBase<ExtractFilesInputs>
     {
-        protected override Task Execute(TaskContext context, ExtractFilesInputs inputs)
+        protected override Task Execute(TaskContext context, ExtractFilesInputs inputs, CancellationToken _)
         {
             string[] filePaths = Directory.GetFiles(context.TymlContext.WorkingDirectory, inputs.ArchiveFilePattern);
 
@@ -21,7 +22,7 @@ namespace RJDev.Tyml.Tasks.Basic.ExtractFile
                     string destination = ResolveDestinationPath(context, inputs, filePath);
 
                     // Log extraction
-                    context.Output.WriteLine($"Extracting file {filePath} to {destination}");
+                    context.Output.WriteLine($"Extracting file {filePath} into {destination}");
                     
                     ZipFile.ExtractToDirectory(
                         filePath,

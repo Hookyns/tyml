@@ -4,9 +4,10 @@ using System.IO;
 using Microsoft.Extensions.DependencyInjection;
 using RJDev.Tyml.Core;
 using RJDev.Tyml.Tasks.Basic.Cmd;
+using RJDev.Tyml.Tasks.Basic.DownloadFile;
 using RJDev.Tyml.Tasks.Basic.ExtractFile;
 
-namespace RJDev.Tyml.Tasks.Basic.Tests
+namespace RJDev.Tyml.Tasks.Basic.Tests.Infrastructure
 {
     public class TestBase
     {
@@ -17,7 +18,7 @@ namespace RJDev.Tyml.Tasks.Basic.Tests
         protected static TymlContext GetContext()
         {
             return new TymlContextBuilder()
-                .UseTasks(typeof(CmdTask), typeof(ExtractFilesTask))
+                .UseTasks(typeof(CmdTask), typeof(ExtractFilesTask), typeof(DownloadFileTask))
                 .UseWorkingDirectory(Path.Combine(Directory.GetCurrentDirectory(), "work-dir"))
                 .WithBaseVariables(new Dictionary<string, object>()
                 {
@@ -40,6 +41,7 @@ namespace RJDev.Tyml.Tasks.Basic.Tests
 
             collection.AddTransient<CmdTask>();
             collection.AddTransient<ExtractFilesTask>();
+            collection.AddTransient<DownloadFileTask>();
 
             ServiceProvider provider = collection.BuildServiceProvider();
             return provider;

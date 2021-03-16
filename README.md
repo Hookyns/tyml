@@ -33,14 +33,14 @@ variables: # optional variable section; overwriting environment variables and Ty
     with: colon
 
 steps:
-    - task: Cmd # Name of task
-      displayName: "Run something" # Optional display name
-      inputs: # Input arguments parsed into IDictionary passed to ITask.Execute or parsed into generic type of TaskBase<TInputs> if you inherit from that 
-        Script: "something.exe"
-        Args:
-          SomeEnvVariable: $(ProductionEnvironment) # $(..) replaced by variable value before execution if defined
-          ProjectDescription: '$(ProjectDescription)'
-          FooVariable: $(foo)! # Required variable; Exception thrown if not defined
+  - task: Cmd # Name of task
+    displayName: "Run something" # Optional display name
+    inputs: # Input arguments parsed into IDictionary passed to ITask.Execute or parsed into generic type of TaskBase<TInputs> if you inherit from that 
+      Script: "something.exe"
+      Args:
+        SomeEnvVariable: $(ProductionEnvironment) # $(..) replaced by variable value before execution if defined
+        ProjectDescription: '$(ProjectDescription)'
+        FooVariable: $(foo)! # Required variable; Exception thrown if not defined
 ```
 
 ## Predefined Tasks 

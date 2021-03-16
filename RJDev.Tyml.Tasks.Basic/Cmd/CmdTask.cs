@@ -1,6 +1,6 @@
-using System;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
+using System.Threading;
 using System.Threading.Tasks;
 using RJDev.Tyml.Core;
 using RJDev.Tyml.Core.Tasks;
@@ -10,7 +10,7 @@ namespace RJDev.Tyml.Tasks.Basic.Cmd
     [TymlTask("Cmd")]
     public class CmdTask : TaskBase<CmdInputs>
     {
-        protected override Task Execute(TaskContext context, CmdInputs inputs)
+        protected override Task Execute(TaskContext context, CmdInputs inputs, CancellationToken _)
         {
             Process cmd = ExecutePlatformCmd(inputs);
             cmd.WaitForExit();

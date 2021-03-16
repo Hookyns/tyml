@@ -1,8 +1,10 @@
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using RJDev.Tyml.Core;
 using RJDev.Tyml.Core.Tasks;
+using RJDev.Tyml.Tasks.Basic.Tests.Infrastructure;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -52,7 +54,7 @@ steps:
   - task: ExtractFiles
     displayName: 'Extract test.zip file'
     inputs:
-      ArchiveFilePattern: '*.zip'
+      ArchiveFilePattern: 'te*.zip'
       Destination: './'
       Overwrite: true
 ";
@@ -88,6 +90,31 @@ steps:
 ";
 
             var results = await executor.Execute(context, yaml);
+
+            foreach (TaskOutput taskOutput in results)
+            {
+                testOutputHelper.WriteLine(taskOutput.Output);
+            }
+        }
+
+        [Fact]
+        public async Task DownloadTasksTest()
+        {
+            IServiceProvider serviceProvider = GetServiceProvider();
+            TymlContext context = GetContext();
+            TymlExecutor executor = serviceProvider.GetRequiredService<TymlExecutor>();
+
+            string yaml = @"
+steps:
+  - task: DownloadFile
+    displayName: 'Download 10 MB test file'
+    inputs:
+      Url: 'http://212.183.159.230/10MB.zip'
+      Destination: './'
+";
+
+            var cts = new CancellationTokenSource(TimeSpan.FromSeconds(2));
+            var results = await executor.Execute(context, yaml, cts.Token);
 
             foreach (TaskOutput taskOutput in results)
             {
