@@ -1,18 +1,35 @@
 using System.Collections.Generic;
+using System.IO;
+using System.Text;
 
 namespace RJDev.Tyml.Core
 {
     public class TaskContext
     {
         /// <summary>
-        /// YAML variables
+        /// YAML variables.
         /// </summary>
         private readonly IDictionary<string, object> variables;
 
         /// <summary>
-        /// Root YAML context object
+        /// Backing field with TextWriter instance
+        /// </summary>
+        private TextWriter? textWriter;
+
+        /// <summary>
+        /// Root YAML context object.
         /// </summary>
         public TymlContext TymlContext { get; }
+
+        /// <summary>
+        /// Task output.
+        /// </summary>
+        internal StringBuilder OutputStringBuilder { get; } = new();
+
+        /// <summary>
+        /// Output text writer.
+        /// </summary>
+        public TextWriter Output => this.textWriter ??= new StringWriter(this.OutputStringBuilder);
 
         /// <summary>
         /// Ctor
@@ -24,9 +41,9 @@ namespace RJDev.Tyml.Core
             this.variables = variables;
             this.TymlContext = tymlContext;
         }
-        
+
         /// <summary>
-        /// eturn variable by name.
+        /// Return variable by name.
         /// </summary>
         /// <remarks>
         /// Returns YAML variable, context variable or environment variable, in this order.

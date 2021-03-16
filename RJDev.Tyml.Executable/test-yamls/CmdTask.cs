@@ -1,4 +1,3 @@
-using System;
 using System.Linq;
 using System.Threading.Tasks;
 using RJDev.Tyml.Core;
@@ -10,7 +9,7 @@ namespace RJDev.Tyml.Executable
     {
         protected override Task Execute(TaskContext context, CmdTaskConfig inputs)
         {
-            Console.WriteLine($"Script: {inputs.Script} with args: {string.Join("; ", inputs.Args.Select(entry => entry.Key + ":" + entry.Value))}");
+            context.Output.WriteLine($"Script: {inputs.Script} with args: {string.Join("; ", inputs.Args.Select(entry => entry.Key + ":" + entry.Value))}");
             return Task.CompletedTask;
         }
     }

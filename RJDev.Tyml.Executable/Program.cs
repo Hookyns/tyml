@@ -63,7 +63,14 @@ namespace RJDev.Tyml.Executable
                 .Build();
 
             TymlExecutor tymlExecutor = provider.GetRequiredService<TymlExecutor>();
-            await tymlExecutor.Execute(tymlContext, ymlContent);
+            var outputs = await tymlExecutor.Execute(tymlContext, ymlContent);
+            
+            Console.WriteLine("Task outputs:");
+            foreach (TaskOutput taskOutput in outputs)
+            {
+                Console.WriteLine(taskOutput.DisplayName);
+                Console.WriteLine(taskOutput.Output);
+            }
         }
 
         /// <summary>
