@@ -3,6 +3,7 @@ using System.IO;
 using System.IO.Compression;
 using System.Threading.Tasks;
 using RJDev.Tyml.Core;
+using RJDev.Tyml.Core.Tasks;
 
 namespace RJDev.Tyml.Tasks.Basic.ExtractFile
 {
