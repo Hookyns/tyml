@@ -7,7 +7,6 @@
 		<Company>Roman Jámbor</Company>
 		<Description>Implementation of basic tasks for RJDev.Tyml.</Description>
 		<RepositoryUrl>https://github.com/Hookyns/tyml</RepositoryUrl>
-		<TargetFramework>net5.0</TargetFramework>
 		<RootNamespace>RJDev.Tyml.Tasks.Basic</RootNamespace>
 	</PropertyGroup>
 	
