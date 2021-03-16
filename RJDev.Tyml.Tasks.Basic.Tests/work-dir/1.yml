@@ -1,0 +1,29 @@
+description: "Some description of this YAML file and its tasks."
+variables:
+  SomeDescription: |- # "|" means Keep line wraps; "-" means no line wraps at end; https://yaml-multiline.info
+    This is testing multiline project description.
+    This is second line of it.
+    with: colon
+
+steps:
+  - task: Test
+    displayName: "Seeding"
+    inputs:
+      Script: "Inf.CoBis.SeedRunner.exe"
+      Args:
+        SomeDescription: '$(SomeDescription)'
+        FooVariable: $(foo)!
+          -
+  - task: Cmd
+    displayName: "Run something"
+    inputs:
+      Script: "something.exe"
+      Args:
+        SomeEnvVariable: $(ProductionEnvironment)
+        ProjectDescription: '$(ProjectDescription)'
+        FooVariable: $(foo)! # Required variable
+      
+  - task: Cmd
+    displayName: "Echo"
+    inputs:
+      Script: 'echo Hello World! $(SomeDescription)'

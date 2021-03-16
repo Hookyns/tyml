@@ -1,0 +1,18 @@
+description: "Some description of this YAML file and its tasks."
+variables:
+  SomeDescription: |- # "|" means Keep line wraps; "-" means no line wraps at end; https://yaml-multiline.info
+    This is testing multiline project description.
+    This is second line of it.
+    with: colon
+
+steps:
+  - task: ExtractFiles
+    displayName: "Extract test.zip file"
+    inputs:
+      ArchiveFilePattern: "*.zip"
+      Destination: "./"
+      
+  - task: Cmd
+    displayName: "Echo"
+    inputs:
+      Script: 'echo Hello World! $(SomeDescription)'

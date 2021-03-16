@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<PackageId>RJDev.Tyml.Tasks.Basic</PackageId>
+		<Version>1.0.0</Version>
+		<Authors>Roman Jámbor</Authors>
+		<Company>Roman Jámbor</Company>
+		<Description>Implementation of basic tasks for RJDev.Tyml.</Description>
+		<RepositoryUrl>https://github.com/Hookyns/tyml</RepositoryUrl>
+		<TargetFramework>net5.0</TargetFramework>
+		<RootNamespace>RJDev.Tyml.Tasks.Basic</RootNamespace>
+	</PropertyGroup>
+
+	<ItemGroup>
+	  <Folder Include="Dotnet" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <PackageReference Include="RJDev.Tyml.Core" Version="1.1.0" />
+	</ItemGroup>
+	
+</Project>
