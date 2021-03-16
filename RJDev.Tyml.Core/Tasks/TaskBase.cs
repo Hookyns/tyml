@@ -2,7 +2,7 @@ using System.Collections;
 using System.Threading.Tasks;
 using RJDev.Tyml.Core.Yml;
 
-namespace RJDev.Tyml.Core
+namespace RJDev.Tyml.Core.Tasks
 {
     public abstract class TaskBase<TInputs> : ITask
     {

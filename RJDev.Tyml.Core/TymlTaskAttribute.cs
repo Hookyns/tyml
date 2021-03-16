@@ -11,12 +11,19 @@ namespace RJDev.Tyml.Core
         public string Name { get; }
 
         /// <summary>
+        /// Task description
+        /// </summary>
+        public string? Description { get; }
+
+        /// <summary>
         /// Ctor
         /// </summary>
         /// <param name="name">Case-insensitive name of the task.</param>
-        public TymlTaskAttribute(string name)
+        /// <param name="description"></param>
+        public TymlTaskAttribute(string name, string? description = null)
         {
             this.Name = name;
+            this.Description = description;
         }
     }
 }

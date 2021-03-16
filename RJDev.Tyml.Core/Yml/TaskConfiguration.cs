@@ -14,7 +14,7 @@ namespace RJDev.Tyml.Core.Yml
         /// <summary>
         /// Display name of task
         /// </summary>
-        public string DisplayName { get; set; } = string.Empty;
+        public string? DisplayName { get; set; }
 
         /// <summary>
         /// Collection of input arguments

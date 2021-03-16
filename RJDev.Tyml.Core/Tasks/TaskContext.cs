@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 
-namespace RJDev.Tyml.Core
+namespace RJDev.Tyml.Core.Tasks
 {
     public class TaskContext
     {
@@ -12,7 +12,7 @@ namespace RJDev.Tyml.Core
         private readonly IDictionary<string, object> variables;
 
         /// <summary>
-        /// Backing field with TextWriter instance
+        /// Backing field with TextWriter instance.
         /// </summary>
         private TextWriter? textWriter;
 
@@ -30,16 +30,22 @@ namespace RJDev.Tyml.Core
         /// Output text writer.
         /// </summary>
         public TextWriter Output => this.textWriter ??= new StringWriter(this.OutputStringBuilder);
+        
+        /// <summary>
+        /// Information about task
+        /// </summary>
+        internal TaskInfo TaskInfo { get; }
 
         /// <summary>
         /// Ctor
         /// </summary>
         /// <param name="tymlContext"></param>
         /// <param name="variables"></param>
-        public TaskContext(TymlContext tymlContext, IDictionary<string, object> variables)
+        public TaskContext(TymlContext tymlContext, IDictionary<string, object> variables, TaskInfo taskInfo)
         {
             this.variables = variables;
             this.TymlContext = tymlContext;
+            this.TaskInfo = taskInfo;
         }
 
         /// <summary>

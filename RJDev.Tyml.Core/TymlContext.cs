@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using RJDev.Tyml.Core.Tasks;
 
 namespace RJDev.Tyml.Core
 {
@@ -14,7 +15,7 @@ namespace RJDev.Tyml.Core
         /// <summary>
         /// Tasks
         /// </summary>
-        private Dictionary<string, Type> availableTasks = new(0);
+        private Dictionary<string, TaskInfo> availableTasks = new(0);
 
         /// <summary>
         /// Working directory used as base directory for all operations.
@@ -69,9 +70,9 @@ namespace RJDev.Tyml.Core
         /// <param name="taskName"></param>
         /// <returns></returns>
         /// <exception cref="InvalidOperationException"></exception>
-        internal Type GetTask(string taskName)
+        internal TaskInfo GetTask(string taskName)
         {
-            if (!this.availableTasks.TryGetValue(taskName.ToLower(), out Type? taskType))
+            if (!this.availableTasks.TryGetValue(taskName.ToLower(), out TaskInfo? taskType))
             {
                 throw new InvalidOperationException($"YAML configuration contains unknown task '{taskName}'.");
             }
@@ -84,7 +85,7 @@ namespace RJDev.Tyml.Core
         /// </summary>
         /// <param name="enumerable"></param>
         /// <returns></returns>
-        private static Dictionary<string, Type> GetTaskDictionary(IEnumerable<Type> enumerable)
+        private static Dictionary<string, TaskInfo> GetTaskDictionary(IEnumerable<Type> enumerable)
         {
             return enumerable
                 .Where(x => x.IsClass && !x.IsAbstract)
@@ -94,7 +95,7 @@ namespace RJDev.Tyml.Core
                     Attr = (TymlTaskAttribute?) t.GetCustomAttributes(typeof(TymlTaskAttribute), true).FirstOrDefault()
                 })
                 .Where(x => x.Attr != null)
-                .ToDictionary(x => x.Attr!.Name.ToLower(), x => x.Type);
+                .ToDictionary(x => x.Attr!.Name.ToLower(), x => new TaskInfo(x.Type, x.Attr!));
         }
     }
 }

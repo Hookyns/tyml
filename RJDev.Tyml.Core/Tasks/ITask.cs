@@ -1,7 +1,7 @@
 using System.Collections;
 using System.Threading.Tasks;
 
-namespace RJDev.Tyml.Core
+namespace RJDev.Tyml.Core.Tasks
 {
     public interface ITask
     {

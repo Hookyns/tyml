@@ -1,4 +1,4 @@
-namespace RJDev.Tyml.Core
+namespace RJDev.Tyml.Core.Tasks
 {
     public class TaskOutput
     {
