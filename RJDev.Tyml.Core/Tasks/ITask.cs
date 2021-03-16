@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace RJDev.Tyml.Core.Tasks
@@ -10,7 +11,8 @@ namespace RJDev.Tyml.Core.Tasks
         /// </summary>
         /// <param name="context"></param>
         /// <param name="inputs"></param>
+        /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        Task Execute(TaskContext context, IDictionary inputs);
+        Task Execute(TaskContext context, IDictionary inputs, CancellationToken cancellationToken);
     }
 }

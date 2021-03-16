@@ -1,5 +1,6 @@
 using System;
 using System.Diagnostics;
+using System.Threading;
 using System.Threading.Tasks;
 using RJDev.Tyml.Core.Tasks;
 
@@ -8,12 +9,12 @@ namespace RJDev.Tyml.Core.Tests.TestTasks.Cmd
     [TymlTask("Cmd", "Execute command on cmd.exe")]
     public class CmdTask : TaskBase<CmdInputs>
     {
-        protected override Task Execute(TaskContext context, CmdInputs inputs)
+        protected override Task Execute(TaskContext context, CmdInputs inputs, CancellationToken cancellationToken)
         {
             Process cmd = ExecutePlatformCmd(inputs);
             
-            return cmd.WaitForExitAsync()
-                .ContinueWith(_ => context.Output.WriteLineAsync(cmd.StandardOutput.ReadToEnd()))
+            return cmd.WaitForExitAsync(cancellationToken)
+                .ContinueWith(_ => context.Output.WriteLineAsync(cmd.StandardOutput.ReadToEnd()), cancellationToken)
                 .Unwrap();
         }
 

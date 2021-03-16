@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using Microsoft.Extensions.DependencyInjection;
 using RJDev.Tyml.Core.Tests.TestTasks.Cmd;
+using RJDev.Tyml.Core.Tests.TestTasks.LongDelay;
 
 namespace RJDev.Tyml.Core.Tests
 {
@@ -15,7 +16,7 @@ namespace RJDev.Tyml.Core.Tests
         protected static TymlContext GetContext()
         {
             return new TymlContextBuilder()
-                .UseTasks(typeof(CmdTask))
+                .UseTasks(typeof(CmdTask), typeof(LongDelayTask))
                 .UseWorkingDirectory(Path.Combine(Directory.GetCurrentDirectory(), "work-dir"))
                 .WithBaseVariables(new Dictionary<string, object>()
                 {
@@ -37,6 +38,7 @@ namespace RJDev.Tyml.Core.Tests
             collection.AddSingleton<TymlExecutor>();
 
             collection.AddTransient<CmdTask>();
+            collection.AddTransient<LongDelayTask>();
 
             ServiceProvider provider = collection.BuildServiceProvider();
             return provider;

@@ -1,4 +1,5 @@
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using RJDev.Tyml.Core.Tasks;
@@ -38,5 +39,28 @@ steps:
                 this.testOutputHelper.WriteLine(taskOutput.Output);
             }
         }
+
+        [Fact]
+        public async Task AbortTaskTest()
+        {
+            IServiceProvider serviceProvider = GetServiceProvider();
+            TymlContext context = GetContext();
+            TymlExecutor executor = serviceProvider.GetRequiredService<TymlExecutor>();
+
+            string yaml = @"
+steps:
+  - task: LongDelay
+    displayName: 'Task containing long delay to test abort'
+";
+
+            var cts = new CancellationTokenSource(TimeSpan.FromSeconds(2));
+
+            await Assert.ThrowsAsync<TaskCanceledException>(async () =>
+            {
+                await executor.Execute(context, yaml, cts.Token);
+            });
+        }
+        
+        
     }
 }
