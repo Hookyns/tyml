@@ -45,21 +45,25 @@ namespace RJDev.Tyml.Core
         public async Task<IList<TaskOutput>> Execute(TymlContext context, string ymlContent, CancellationToken cancellationToken = default)
         {
             RootConfiguration config = this.parser.Parse(ymlContent, context);
+            List<TaskOutput> outputs = new(config.Steps.Count);
 
             // Change Console.Out to NULL
             TextWriter consoleTextWriter = Console.Out;
             Console.SetOut(TextWriter.Null);
 
-            // List of outputs
-            List<TaskOutput> outputs = new(config.Steps.Count);
-
-            foreach (TaskConfiguration step in config.Steps)
+            try
             {
-                await this.ExecuteTask(context, step, config, cancellationToken, outputs);
+                // List of outputs
+                foreach (TaskConfiguration step in config.Steps)
+                {
+                    await this.ExecuteTask(context, step, config, cancellationToken, outputs);
+                }
             }
-
-            // Restore Console.Out
-            Console.SetOut(consoleTextWriter);
+            finally
+            {
+                // Restore Console.Out
+                Console.SetOut(consoleTextWriter);
+            }
 
             return outputs;
         }
