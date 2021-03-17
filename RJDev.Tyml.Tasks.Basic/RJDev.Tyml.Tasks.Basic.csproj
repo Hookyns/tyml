@@ -9,13 +9,13 @@
 		<RepositoryUrl>https://github.com/Hookyns/tyml</RepositoryUrl>
 		<RootNamespace>RJDev.Tyml.Tasks.Basic</RootNamespace>
 	</PropertyGroup>
-	
+
 	<ItemGroup>
-	  <Folder Include="Dotnet" />
+		<Folder Include="Dotnet" />
 	</ItemGroup>
-	
+
 	<ItemGroup>
-	  <PackageReference Include="RJDev.Tyml.Core" Version="1.1.2" />
+		<PackageReference Include="RJDev.Tyml.Core" Version="1.1.2" />
 	</ItemGroup>
-	
+
 </Project>

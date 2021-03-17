@@ -21,19 +21,19 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <ProjectReference Include="..\RJDev.Tyml.Tasks.Basic\RJDev.Tyml.Tasks.Basic.csproj" />
+		<ProjectReference Include="..\RJDev.Tyml.Tasks.Basic\RJDev.Tyml.Tasks.Basic.csproj" />
 	</ItemGroup>
 
 	<ItemGroup>
-	  <None Update="work-dir\2.yml">
-	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-	  </None>
-	  <None Update="work-dir\1.yml">
-	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-	  </None>
-	  <None Update="work-dir\test.zip">
-	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-	  </None>
+		<None Update="work-dir\2.yml">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</None>
+		<None Update="work-dir\1.yml">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</None>
+		<None Update="work-dir\test.zip">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</None>
 	</ItemGroup>
 
 </Project>

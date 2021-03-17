@@ -10,23 +10,23 @@ using Xunit.Abstractions;
 
 namespace RJDev.Tyml.Tasks.Basic.Tests
 {
-    public class TaskTest : TestBase
-    {
-        private readonly ITestOutputHelper testOutputHelper;
+	public class TaskTest : TestBase
+	{
+		private readonly ITestOutputHelper testOutputHelper;
 
-        public TaskTest(ITestOutputHelper testOutputHelper)
-        {
-            this.testOutputHelper = testOutputHelper;
-        }
+		public TaskTest(ITestOutputHelper testOutputHelper)
+		{
+			this.testOutputHelper = testOutputHelper;
+		}
 
-        [Fact]
-        public async Task CmdTaskTest()
-        {
-            IServiceProvider serviceProvider = GetServiceProvider();
-            TymlContext context = GetContext();
-            TymlExecutor executor = serviceProvider.GetRequiredService<TymlExecutor>();
+		[Fact]
+		public async Task CmdTaskTest()
+		{
+			IServiceProvider serviceProvider = GetServiceProvider();
+			TymlContext context = GetContext();
+			TymlExecutor executor = serviceProvider.GetRequiredService<TymlExecutor>();
 
-            string yaml = @"
+			string yaml = @"
 steps:
   - task: Cmd
     displayName: 'Echo the most important message'
@@ -34,22 +34,22 @@ steps:
       Script: 'echo Hello Tyml!'
 ";
 
-            var results = await executor.Execute(context, yaml);
+			var results = await executor.Execute(context, yaml);
 
-            foreach (TaskOutput taskOutput in results)
-            {
-                testOutputHelper.WriteLine(taskOutput.Output);
-            }
-        }
+			foreach (TaskOutput taskOutput in results)
+			{
+				testOutputHelper.WriteLine(taskOutput.Output);
+			}
+		}
 
-        [Fact]
-        public async Task ExtractFilesTaskTest()
-        {
-            IServiceProvider serviceProvider = GetServiceProvider();
-            TymlContext context = GetContext();
-            TymlExecutor executor = serviceProvider.GetRequiredService<TymlExecutor>();
+		[Fact]
+		public async Task ExtractFilesTaskTest()
+		{
+			IServiceProvider serviceProvider = GetServiceProvider();
+			TymlContext context = GetContext();
+			TymlExecutor executor = serviceProvider.GetRequiredService<TymlExecutor>();
 
-            string yaml = @"
+			string yaml = @"
 steps:
   - task: ExtractFiles
     displayName: 'Extract test.zip file'
@@ -59,22 +59,22 @@ steps:
       Overwrite: true
 ";
 
-            var results = await executor.Execute(context, yaml);
+			var results = await executor.Execute(context, yaml);
 
-            foreach (TaskOutput taskOutput in results)
-            {
-                testOutputHelper.WriteLine(taskOutput.Output);
-            }
-        }
+			foreach (TaskOutput taskOutput in results)
+			{
+				testOutputHelper.WriteLine(taskOutput.Output);
+			}
+		}
 
-        [Fact]
-        public async Task MultipleTasksTest()
-        {
-            IServiceProvider serviceProvider = GetServiceProvider();
-            TymlContext context = GetContext();
-            TymlExecutor executor = serviceProvider.GetRequiredService<TymlExecutor>();
+		[Fact]
+		public async Task MultipleTasksTest()
+		{
+			IServiceProvider serviceProvider = GetServiceProvider();
+			TymlContext context = GetContext();
+			TymlExecutor executor = serviceProvider.GetRequiredService<TymlExecutor>();
 
-            string yaml = @"
+			string yaml = @"
 steps:
   - task: Cmd
     displayName: 'Echo the most important message'
@@ -89,22 +89,22 @@ steps:
       Overwrite: true
 ";
 
-            var results = await executor.Execute(context, yaml);
+			var results = await executor.Execute(context, yaml);
 
-            foreach (TaskOutput taskOutput in results)
-            {
-                testOutputHelper.WriteLine(taskOutput.Output);
-            }
-        }
+			foreach (TaskOutput taskOutput in results)
+			{
+				testOutputHelper.WriteLine(taskOutput.Output);
+			}
+		}
 
-        [Fact]
-        public async Task DownloadTasksTest()
-        {
-            IServiceProvider serviceProvider = GetServiceProvider();
-            TymlContext context = GetContext();
-            TymlExecutor executor = serviceProvider.GetRequiredService<TymlExecutor>();
+		[Fact]
+		public async Task DownloadTasksTest()
+		{
+			IServiceProvider serviceProvider = GetServiceProvider();
+			TymlContext context = GetContext();
+			TymlExecutor executor = serviceProvider.GetRequiredService<TymlExecutor>();
 
-            string yaml = @"
+			string yaml = @"
 steps:
   - task: DownloadFile
     displayName: 'Download 10 MB test file'
@@ -113,13 +113,13 @@ steps:
       Destination: './'
 ";
 
-            var cts = new CancellationTokenSource(TimeSpan.FromSeconds(2));
-            var results = await executor.Execute(context, yaml, cts.Token);
+			var cts = new CancellationTokenSource(TimeSpan.FromSeconds(2));
+			var results = await executor.Execute(context, yaml, cts.Token);
 
-            foreach (TaskOutput taskOutput in results)
-            {
-                testOutputHelper.WriteLine(taskOutput.Output);
-            }
-        }
-    }
+			foreach (TaskOutput taskOutput in results)
+			{
+				testOutputHelper.WriteLine(taskOutput.Output);
+			}
+		}
+	}
 }
