@@ -1,4 +1,7 @@
 using System;
+using System.IO;
+using System.Linq;
+using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
@@ -94,6 +97,41 @@ steps:
 			foreach (TaskOutput taskOutput in results)
 			{
 				testOutputHelper.WriteLine(taskOutput.Output);
+			}
+		}
+
+		[Fact]
+		public async Task CmdWorkDirectoryTest()
+		{
+			IServiceProvider serviceProvider = GetServiceProvider();
+			TymlContext context = GetContext();
+			TymlExecutor executor = serviceProvider.GetRequiredService<TymlExecutor>();
+
+			if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+			{
+				string yaml = @"
+steps:
+  - task: Cmd
+    displayName: 'Echo working directory'
+    inputs:
+      Script: 'cd'
+";
+
+				var results = await executor.Execute(context, yaml);
+
+				foreach (TaskOutput taskOutput in results)
+				{
+					testOutputHelper.WriteLine(taskOutput.Output);
+				}
+
+				string workDir = Path.Combine(Directory.GetCurrentDirectory(), "work-dir");
+
+				// Output contains
+				Assert.Contains(workDir + ">cd" + Environment.NewLine + workDir + Environment.NewLine, results.First().Output);
+			}
+			else
+			{
+				Assert.True(false, "This test is not implemented on this platform.");
 			}
 		}
 

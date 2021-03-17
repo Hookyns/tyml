@@ -12,7 +12,7 @@ namespace RJDev.Tyml.Tasks.Basic.Cmd
 	{
 		protected override Task Execute(TaskContext context, CmdInputs inputs, CancellationToken _)
 		{
-			Process cmd = ExecutePlatformCmd(inputs);
+			Process cmd = ExecutePlatformCmd(context, inputs);
 			cmd.WaitForExit();
 			return context.Output.WriteLineAsync(cmd.StandardOutput.ReadToEnd());
 		}
@@ -20,11 +20,12 @@ namespace RJDev.Tyml.Tasks.Basic.Cmd
 		/// <summary>
 		/// Execute process depending on current OS
 		/// </summary>
+		/// <param name="context"></param>
 		/// <param name="inputs"></param>
 		/// <returns></returns>
-		private static Process ExecutePlatformCmd(CmdInputs inputs)
+		private static Process ExecutePlatformCmd(TaskContext context, CmdInputs inputs)
 		{
-			Process cmd = GetBaseProcess();
+			Process cmd = GetBaseProcess(context);
 
 			if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
 			{
@@ -71,10 +72,12 @@ namespace RJDev.Tyml.Tasks.Basic.Cmd
 		/// <summary>
 		/// Return base configured Process instance
 		/// </summary>
+		/// <param name="context"></param>
 		/// <returns></returns>
-		private static Process GetBaseProcess()
+		private static Process GetBaseProcess(TaskContext context)
 		{
 			Process cmd = new();
+			cmd.StartInfo.WorkingDirectory = context.TymlContext.WorkingDirectory;
 			cmd.StartInfo.CreateNoWindow = true;
 			cmd.StartInfo.UseShellExecute = false;
 			cmd.StartInfo.RedirectStandardInput = true;
