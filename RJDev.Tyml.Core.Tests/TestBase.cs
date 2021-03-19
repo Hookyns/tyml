@@ -16,7 +16,7 @@ namespace RJDev.Tyml.Core.Tests
 		protected static TymlContext GetContext()
 		{
 			return new TymlContextBuilder()
-				.UseTasks(typeof(CmdTask), typeof(LongDelayTask))
+				.AddTasks(typeof(CmdTask), typeof(LongDelayTask))
 				.UseWorkingDirectory(Path.Combine(Directory.GetCurrentDirectory(), "work-dir"))
 				.WithBaseVariables(new Dictionary<string, object>()
 				{
