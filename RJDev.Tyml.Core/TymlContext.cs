@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using RJDev.Tyml.Core.Tasks;
 
 namespace RJDev.Tyml.Core
@@ -8,42 +7,28 @@ namespace RJDev.Tyml.Core
 	public class TymlContext
 	{
 		/// <summary>
-		/// Working directory
-		/// </summary>
-		private string? workingDirectory;
-
-		/// <summary>
 		/// Tasks
 		/// </summary>
-		private Dictionary<string, TaskInfo> availableTasks = new(0);
+		private readonly Dictionary<string, TaskInfo> tasks;
 
 		/// <summary>
 		/// Working directory used as base directory for all operations.
 		/// </summary>
-		public string WorkingDirectory
-		{
-			get => this.workingDirectory ?? throw new InvalidOperationException($"Working directory not specified in {nameof(TymlContext)}");
-			internal set => this.workingDirectory = value;
-		}
-
-		/// <summary>
-		/// Tasks
-		/// </summary>
-		internal IEnumerable<Type> Tasks
-		{
-			set => this.availableTasks = GetTaskDictionary(value);
-		}
+		public string WorkingDirectory { get; }
 
 		/// <summary>
 		/// Variables
 		/// </summary>
-		public IDictionary<string, object> BaseVariables { get; internal set; } = new Dictionary<string, object>(0);
+		public IDictionary<string, object> BaseVariables { get; }
 
 		/// <summary>
 		/// Construct Tyml context
 		/// </summary>
-		internal TymlContext()
+		internal TymlContext(Dictionary<string, TaskInfo> tasks, string workingDirectory, Dictionary<string, object> baseVariables)
 		{
+			this.tasks = tasks;
+			this.WorkingDirectory = workingDirectory;
+			this.BaseVariables = baseVariables;
 		}
 
 		/// <summary>
@@ -72,30 +57,12 @@ namespace RJDev.Tyml.Core
 		/// <exception cref="InvalidOperationException"></exception>
 		internal TaskInfo GetTask(string taskName)
 		{
-			if (!this.availableTasks.TryGetValue(taskName.ToLower(), out TaskInfo? taskType))
+			if (!this.tasks.TryGetValue(taskName.ToLower(), out TaskInfo? taskType))
 			{
 				throw new InvalidOperationException($"YAML configuration contains unknown task '{taskName}'.");
 			}
 
 			return taskType;
-		}
-
-		/// <summary>
-		/// Return dictionary of YamlTask types.
-		/// </summary>
-		/// <param name="enumerable"></param>
-		/// <returns></returns>
-		private static Dictionary<string, TaskInfo> GetTaskDictionary(IEnumerable<Type> enumerable)
-		{
-			return enumerable
-				.Where(x => x.IsClass && !x.IsAbstract)
-				.Select(t => new
-				{
-					Type = t,
-					Attr = (TymlTaskAttribute?) t.GetCustomAttributes(typeof(TymlTaskAttribute), true).FirstOrDefault()
-				})
-				.Where(x => x.Attr != null)
-				.ToDictionary(x => x.Attr!.Name.ToLower(), x => new TaskInfo(x.Type, x.Attr!));
 		}
 	}
 }

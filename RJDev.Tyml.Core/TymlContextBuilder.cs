@@ -1,31 +1,58 @@
+using RJDev.Tyml.Core.Tasks;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace RJDev.Tyml.Core
 {
 	public class TymlContextBuilder
 	{
-		/// <summary>
-		/// Context being created.
-		/// </summary>
-		private readonly TymlContext context;
+		private readonly List<Type> taskTypes = new();
+		private string? workingDirectory;
+		private readonly Dictionary<string, object> baseVariables = new();
 
 		/// <summary>
 		/// Ctor
 		/// </summary>
 		public TymlContextBuilder()
 		{
-			this.context = new TymlContext();
 		}
 
 		/// <summary>
-		/// Set tasks allowed for execution.
+		/// Return instance of TymlContext.
 		/// </summary>
-		/// <param name="tasks"></param>
 		/// <returns></returns>
-		public TymlContextBuilder UseTasks(params Type[] tasks)
+		public TymlContext Build()
 		{
-			this.context.Tasks = tasks;
+			if (this.workingDirectory == null)
+			{
+				throw new InvalidOperationException($"Working directory not specified in {nameof(TymlContext)}");
+			}
+
+			var tasks = GetTasks(taskTypes);
+
+			return new TymlContext(tasks, this.workingDirectory, this.baseVariables ?? new(0));
+		}
+
+		/// <summary>
+		/// Add task allowed for execution.
+		/// </summary>
+		/// <param name="taskTypes"></param>
+		/// <returns></returns>
+		public TymlContextBuilder AddTask(Type taskType)
+		{
+			this.taskTypes.Add(taskType);
+			return this;
+		}
+
+		/// <summary>
+		/// Add tasks allowed for execution.
+		/// </summary>
+		/// <param name="taskTypes"></param>
+		/// <returns></returns>
+		public TymlContextBuilder AddTasks(params Type[] taskTypes)
+		{
+			this.taskTypes.AddRange(taskTypes);
 			return this;
 		}
 
@@ -36,7 +63,19 @@ namespace RJDev.Tyml.Core
 		/// <returns></returns>
 		public TymlContextBuilder UseWorkingDirectory(string workingDirectory)
 		{
-			this.context.WorkingDirectory = workingDirectory;
+			this.workingDirectory = workingDirectory;
+			return this;
+		}
+
+		/// <summary>
+		/// Set base variable.
+		/// </summary>
+		/// <param name="variables"></param>
+		/// <returns></returns>
+		/// <remarks>Replace existing variable or add new variable.</remarks>
+		public TymlContextBuilder WithBaseVariable(string name, object value)
+		{
+			this.baseVariables[name] = value;
 			return this;
 		}
 
@@ -45,19 +84,32 @@ namespace RJDev.Tyml.Core
 		/// </summary>
 		/// <param name="variables"></param>
 		/// <returns></returns>
-		public TymlContextBuilder WithBaseVariables(IDictionary<string, object> variables)
+		/// <remarks>Replace existing variables or add new variables.</remarks>
+		public TymlContextBuilder WithBaseVariables(Dictionary<string, object> baseVariables)
 		{
-			this.context.BaseVariables = variables;
+			foreach ((string name, object value) in baseVariables)
+			{
+				this.baseVariables[name] = value;
+			}
 			return this;
 		}
 
 		/// <summary>
-		/// Return instance of TymlContext.
+		/// Return dictionary of YamlTask types.
 		/// </summary>
+		/// <param name="taskTypes"></param>
 		/// <returns></returns>
-		public TymlContext Build()
+		private static Dictionary<string, TaskInfo> GetTasks(IEnumerable<Type> taskTypes)
 		{
-			return this.context;
+			return taskTypes
+				.Where(x => x.IsClass && !x.IsAbstract)
+				.Select(t => new
+				{
+					Type = t,
+					Attribute = (TymlTaskAttribute?)t.GetCustomAttributes(typeof(TymlTaskAttribute), true).FirstOrDefault()
+				})
+				.Where(x => x.Attribute != null)
+				.ToDictionary(x => x.Attribute!.Name.ToLower(), x => new TaskInfo(x.Type, x.Attribute!));
 		}
 	}
 }

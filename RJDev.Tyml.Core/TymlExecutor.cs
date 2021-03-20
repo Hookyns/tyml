@@ -83,8 +83,10 @@ namespace RJDev.Tyml.Core
 			TaskInfo taskInfo = context.GetTask(step.Task);
 
 			// Get Task instance from ServiceProvider
-			ITask task = (ITask) (this.serviceProvider.GetService(taskInfo.Type)
-				?? throw new InvalidOperationException($"Required service '{taskInfo.Type.FullName}' not registered."));
+			if (this.serviceProvider.GetService(taskInfo.Type) is not ITask task)
+			{
+				throw new InvalidOperationException($"Required service '{taskInfo.Type.FullName}' not registered.");
+			}
 
 			// Construct TaskContext
 			TaskContext taskContext = new(context, config.Variables, taskInfo);
