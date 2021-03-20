@@ -1,5 +1,5 @@
-using System;
 using System.Diagnostics;
+using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 using RJDev.Tyml.Core.Tasks;
@@ -12,10 +12,8 @@ namespace RJDev.Tyml.Core.Tests.TestTasks.Cmd
 		protected override Task Execute(TaskContext context, CmdInputs inputs, CancellationToken cancellationToken)
 		{
 			Process cmd = ExecutePlatformCmd(inputs);
-
-			return cmd.WaitForExitAsync(cancellationToken)
-				.ContinueWith(_ => context.Output.WriteLineAsync(cmd.StandardOutput.ReadToEnd()), cancellationToken)
-				.Unwrap();
+			cmd.WaitForExit();
+			return context.Output.WriteLineAsync(cmd.StandardOutput.ReadToEnd());
 		}
 
 		/// <summary>
@@ -27,11 +25,11 @@ namespace RJDev.Tyml.Core.Tests.TestTasks.Cmd
 		{
 			Process cmd = GetBaseProcess();
 
-			if (OperatingSystem.IsWindows())
+			if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
 			{
 				ExecuteCmd(inputs, cmd);
 			}
-			else if (OperatingSystem.IsLinux() || OperatingSystem.IsMacOS())
+			else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux) || RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
 			{
 				ExecuteBash(inputs, cmd);
 			}
