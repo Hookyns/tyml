@@ -72,6 +72,7 @@ namespace RJDev.Tyml.Core
 		/// </summary>
 		/// <param name="variables"></param>
 		/// <returns></returns>
+		/// <remarks>Replace existing variable or add new variable.</remarks>
 		public TymlContextBuilder WithBaseVariable(string name, object value)
 		{
 			this.baseVariables[name] = value;
@@ -83,6 +84,7 @@ namespace RJDev.Tyml.Core
 		/// </summary>
 		/// <param name="variables"></param>
 		/// <returns></returns>
+		/// <remarks>Replace existing variables or add new variables.</remarks>
 		public TymlContextBuilder WithBaseVariables(Dictionary<string, object> baseVariables)
 		{
 			foreach ((string name, object value) in baseVariables)
