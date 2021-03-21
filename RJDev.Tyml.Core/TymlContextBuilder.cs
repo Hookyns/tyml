@@ -12,13 +12,6 @@ namespace RJDev.Tyml.Core
 		private readonly Dictionary<string, object> baseVariables = new();
 
 		/// <summary>
-		/// Ctor
-		/// </summary>
-		public TymlContextBuilder()
-		{
-		}
-
-		/// <summary>
 		/// Return instance of TymlContext.
 		/// </summary>
 		/// <returns></returns>
@@ -37,7 +30,7 @@ namespace RJDev.Tyml.Core
 		/// <summary>
 		/// Add task allowed for execution.
 		/// </summary>
-		/// <param name="taskTypes"></param>
+		/// <param name="taskType"></param>
 		/// <returns></returns>
 		public TymlContextBuilder AddTask(Type taskType)
 		{
@@ -70,7 +63,8 @@ namespace RJDev.Tyml.Core
 		/// <summary>
 		/// Set base variable.
 		/// </summary>
-		/// <param name="variables"></param>
+		/// <param name="name"></param>
+		/// <param name="value"></param>
 		/// <returns></returns>
 		/// <remarks>Replace existing variable or add new variable.</remarks>
 		public TymlContextBuilder WithBaseVariable(string name, object value)
@@ -82,7 +76,7 @@ namespace RJDev.Tyml.Core
 		/// <summary>
 		/// Set base variables.
 		/// </summary>
-		/// <param name="variables"></param>
+		/// <param name="baseVariables"></param>
 		/// <returns></returns>
 		/// <remarks>Replace existing variables or add new variables.</remarks>
 		public TymlContextBuilder WithBaseVariables(Dictionary<string, object> baseVariables)

@@ -1,6 +1,5 @@
 using System.Collections.Generic;
-using System.IO;
-using System.Text;
+using RJDev.Outputter;
 
 namespace RJDev.Tyml.Core.Tasks
 {
@@ -10,26 +9,16 @@ namespace RJDev.Tyml.Core.Tasks
 		/// YAML variables.
 		/// </summary>
 		private readonly IDictionary<string, object> variables;
-
-		/// <summary>
-		/// Backing field with TextWriter instance.
-		/// </summary>
-		private TextWriter? textWriter;
-
+		
 		/// <summary>
 		/// Root YAML context object.
 		/// </summary>
 		public TymlContext TymlContext { get; }
 
 		/// <summary>
-		/// Task output.
+		/// Task output writer.
 		/// </summary>
-		internal StringBuilder OutputStringBuilder { get; } = new();
-
-		/// <summary>
-		/// Output text writer.
-		/// </summary>
-		public TextWriter Output => this.textWriter ??= new StringWriter(this.OutputStringBuilder);
+		public OutputWriter Out { get; }
 
 		/// <summary>
 		/// Information about task
@@ -41,11 +30,14 @@ namespace RJDev.Tyml.Core.Tasks
 		/// </summary>
 		/// <param name="tymlContext"></param>
 		/// <param name="variables"></param>
-		public TaskContext(TymlContext tymlContext, IDictionary<string, object> variables, TaskInfo taskInfo)
+		/// <param name="taskInfo"></param>
+		/// <param name="outputWriter"></param>
+		public TaskContext(TymlContext tymlContext, IDictionary<string, object> variables, TaskInfo taskInfo, OutputWriter outputWriter)
 		{
 			this.variables = variables;
 			this.TymlContext = tymlContext;
 			this.TaskInfo = taskInfo;
+			this.Out = outputWriter;
 		}
 
 		/// <summary>

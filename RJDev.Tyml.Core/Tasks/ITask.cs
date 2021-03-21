@@ -13,6 +13,6 @@ namespace RJDev.Tyml.Core.Tasks
 		/// <param name="inputs"></param>
 		/// <param name="cancellationToken"></param>
 		/// <returns></returns>
-		Task Execute(TaskContext context, IDictionary inputs, CancellationToken cancellationToken);
+		Task<TaskCompletionStatus> Execute(TaskContext context, IDictionary inputs, CancellationToken cancellationToken);
 	}
 }

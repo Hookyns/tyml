@@ -1,3 +1,5 @@
+using RJDev.Outputter;
+
 namespace RJDev.Tyml.Core.Tasks
 {
 	public class TaskOutput
@@ -8,26 +10,33 @@ namespace RJDev.Tyml.Core.Tasks
 		public string DisplayName { get; }
 
 		/// <summary>
+		/// Task's completion status.
+		/// </summary>
+		public TaskCompletionStatus Status { get; }
+
+		/// <summary>
 		/// Name identifier of task
 		/// </summary>
 		public string Name { get; }
 
 		/// <summary>
-		/// Output of task
+		/// Reader of tasks output
 		/// </summary>
-		public string Output { get; }
+		public OutputReader Output { get; }
 
 		/// <summary>
 		/// Ctor
 		/// </summary>
 		/// <param name="name"></param>
 		/// <param name="displayName"></param>
-		/// <param name="output"></param>
-		public TaskOutput(string name, string displayName, string output)
+		/// <param name="taskCompletionStatus"></param>
+		/// <param name="outputReader"></param>
+		public TaskOutput(string name, string displayName, TaskCompletionStatus taskCompletionStatus, OutputReader outputReader)
 		{
 			this.Name = name;
 			this.DisplayName = displayName;
-			this.Output = output;
+			this.Status = taskCompletionStatus;
+			this.Output = outputReader;
 		}
 	}
 }

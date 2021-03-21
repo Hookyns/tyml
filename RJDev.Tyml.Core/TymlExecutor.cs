@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
+using RJDev.Outputter;
 using RJDev.Tyml.Core.Tasks;
 using RJDev.Tyml.Core.Yml;
 
@@ -47,9 +48,11 @@ namespace RJDev.Tyml.Core
 			RootConfiguration config = this.parser.Parse(ymlContent, context);
 			List<TaskOutput> outputs = new(config.Steps.Count);
 
-			// Change Console.Out to NULL
+			// Change Console.Out & Error to NULL
 			TextWriter consoleTextWriter = Console.Out;
+			TextWriter consoleErrorTextWriter = Console.Error;
 			Console.SetOut(TextWriter.Null);
+			Console.SetError(TextWriter.Null);
 
 			try
 			{
@@ -61,8 +64,9 @@ namespace RJDev.Tyml.Core
 			}
 			finally
 			{
-				// Restore Console.Out
+				// Restore Console.Out & Error
 				Console.SetOut(consoleTextWriter);
+				Console.SetOut(consoleErrorTextWriter);
 			}
 
 			return outputs;
@@ -88,13 +92,18 @@ namespace RJDev.Tyml.Core
 				throw new InvalidOperationException($"Required service '{taskInfo.Type.FullName}' not registered.");
 			}
 
+			Outputter.Outputter outputter = new(cancellationToken);
+
 			// Construct TaskContext
-			TaskContext taskContext = new(context, config.Variables, taskInfo);
+			TaskContext taskContext = new(context, config.Variables, taskInfo, outputter.OutputWriter);
 
 			// Execute task and log info about it into output
-			await ExecuteTaskWithLog(step, taskContext, taskDisplayName, task, cancellationToken);
+			TaskCompletionStatus status = await ExecuteTaskWithLog(step, taskContext, taskDisplayName, task, cancellationToken);
 
-			outputs.Add(new TaskOutput(step.Task, taskDisplayName, taskContext.OutputStringBuilder.ToString()));
+			// Complete outputter
+			outputter.Complete();
+			
+			outputs.Add(new TaskOutput(step.Task, taskDisplayName, status, outputter.OutputReader));
 		}
 
 		/// <summary>
@@ -105,20 +114,22 @@ namespace RJDev.Tyml.Core
 		/// <param name="taskDisplayName"></param>
 		/// <param name="task"></param>
 		/// <param name="cancellationToken"></param>
-		private static async Task ExecuteTaskWithLog(TaskConfiguration step, TaskContext taskContext, string taskDisplayName, ITask task, CancellationToken cancellationToken)
+		private static async Task<TaskCompletionStatus> ExecuteTaskWithLog(TaskConfiguration step, TaskContext taskContext, string taskDisplayName, ITask task, CancellationToken cancellationToken)
 		{
 			// Starting
-			await taskContext.Output.WriteLineAsync("Starting: " + taskDisplayName);
-			await taskContext.Output.WriteLineAsync("=".PadLeft(HrWidth, '='));
-			await taskContext.Output.WriteLineAsync("Task: " + taskContext.TaskInfo.Attribute.Name);
-			await taskContext.Output.WriteLineAsync("Description: " + taskContext.TaskInfo.Attribute.Description);
-			await taskContext.Output.WriteLineAsync("=".PadLeft(HrWidth, '='));
+			taskContext.Out.WriteLine($"Starting: {taskDisplayName}", EntryType.Success);
+			taskContext.Out.WriteLine("=".PadLeft(HrWidth, '='), EntryType.Minor);
+			taskContext.Out.WriteLine($"Task: {taskContext.TaskInfo.Attribute.Name}", EntryType.Minor);
+			taskContext.Out.WriteLine($"Description: {taskContext.TaskInfo.Attribute.Description}", EntryType.Minor);
+			taskContext.Out.WriteLine("=".PadLeft(HrWidth, '='), EntryType.Minor);
 
-			await task.Execute(taskContext, step.Inputs, cancellationToken);
+			TaskCompletionStatus status = await task.Execute(taskContext, step.Inputs, cancellationToken);
 
 			// Finishing
-			await taskContext.Output.WriteLineAsync("=".PadLeft(HrWidth, '='));
-			await taskContext.Output.WriteLineAsync("Finishing: " + taskDisplayName);
+			taskContext.Out.WriteLine("=".PadLeft(HrWidth, '='), EntryType.Minor);
+			taskContext.Out.WriteLine($"Finishing: {taskDisplayName}", status == TaskCompletionStatus.Ok ? EntryType.Success : EntryType.Error);
+
+			return status;
 		}
 	}
 }
