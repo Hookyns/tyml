@@ -167,5 +167,32 @@ steps:
 				await execution.Completion();
 			}
 		}
+
+		[Fact]
+		public async Task DownloadTasksTest_CreateDirectory()
+		{
+			IServiceProvider serviceProvider = GetServiceProvider();
+			TymlContext context = GetContext();
+			TymlExecutor executor = serviceProvider.GetRequiredService<TymlExecutor>();
+
+			string yaml = @"
+steps:
+  - task: DownloadFile
+    displayName: 'Download 5 MB test file'
+    inputs:
+      Url: 'http://212.183.159.230/5MB.zip'
+      Destination: non/existing/directory
+";
+
+			var cts = new CancellationTokenSource(TimeSpan.FromSeconds(10));
+			SimpleLambdaSink sink = new SimpleLambdaSink(entry => this.testOutputHelper.WriteLine(entry.ToString().TrimEnd('\r', '\n')));
+
+			await foreach (TaskExecution execution in executor.Execute(context, yaml, cts.Token))
+			{
+				await execution.OutputReader.Pipe(sink);
+				TaskResult result = await execution.Completion();
+				Assert.Equal(TaskCompletionStatus.Ok, result.Status);
+			}
+		}
 	}
 }
