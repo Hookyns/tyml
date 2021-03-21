@@ -37,6 +37,12 @@ namespace RJDev.Tyml.Tasks.Basic.DownloadFile
 				Uri fileUri = new(inputs.Url);
 				string destination = ResolveDestinationPath(context, inputs, fileUri);
 
+				// Ensure destination directory
+				if (Path.GetDirectoryName(destination) is string destinationDirectory)
+				{
+					Directory.CreateDirectory(destinationDirectory);
+				}
+
 				// Write into output
 				context.Out.WriteLine($"Downloading file {fileUri} into {destination}");
 
@@ -71,7 +77,7 @@ namespace RJDev.Tyml.Tasks.Basic.DownloadFile
 			// Resolve relative path if it is not absolute
 			if (!Path.IsPathRooted(destination))
 			{
-				destination = Path.GetFullPath(inputs.Destination, context.TymlContext.WorkingDirectory);
+				destination = Path.GetFullPath(destination, context.TymlContext.WorkingDirectory);
 			}
 
 			// Add directory to destination path by input file name
