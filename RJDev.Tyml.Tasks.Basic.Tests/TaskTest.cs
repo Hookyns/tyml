@@ -198,12 +198,12 @@ steps:
   - task: DownloadFile
     displayName: 'Download 5 MB test file'
     inputs:
-      Url: 'http://212.183.159.230/5MB.zip'
+      Url: 'https://github.com/google/googletest/archive/refs/tags/release-1.10.0.zip'
       Destination: non/existing/directory
 ";
 
 			var cts = new CancellationTokenSource(TimeSpan.FromSeconds(10));
-			SimpleLambdaSink sink = new SimpleLambdaSink(entry => this.testOutputHelper.WriteLine(entry.ToString().TrimEnd('\r', '\n')));
+			SimpleLambdaSink sink = new SimpleLambdaSink(entry => this.testOutputHelper.WriteLine(entry.ToString().TrimEnd()));
 
 			await foreach (TaskExecution execution in executor.Execute(context, yaml, cts.Token))
 			{

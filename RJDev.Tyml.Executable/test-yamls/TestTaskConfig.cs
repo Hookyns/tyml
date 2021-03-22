@@ -4,8 +4,8 @@ namespace RJDev.Tyml.Executable
 {
 	public class TestTaskConfig
 	{
-		public string Script { get; set; }
+		public string Script { get; set; } = string.Empty;
 
-		public IDictionary<string, object> Args { get; set; }
+		public IDictionary<string, object> Args { get; set; } = new Dictionary<string, object>(0);
 	}
 }
