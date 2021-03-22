@@ -22,7 +22,24 @@ namespace RJDev.Tyml.Tasks.Basic.DownloadFile
 				int percentageCompleted = 0;
 
 				// Download events event
-				client.DownloadFileCompleted += (_, _) => { tcs.SetResult(TaskCompletionStatus.Ok); };
+				client.DownloadFileCompleted += (_, args) =>
+				{
+					if (args.Cancelled)
+					{
+						tcs.SetResult(TaskCompletionStatus.Error);
+					}
+					else if (args.Error != null)
+					{
+						context.Out.WriteLine("File download failed.", EntryType.Error);
+						context.Out.WriteLine(args.Error.Message, EntryType.Error);
+						context.Out.WriteLine(args.Error.StackTrace ?? string.Empty, EntryType.Minor);
+						tcs.SetResult(TaskCompletionStatus.Error);
+					}
+					else
+					{
+						tcs.SetResult(TaskCompletionStatus.Ok);
+					}
+				};
 				client.DownloadProgressChanged += (sender, progressArgs) =>
 				{
 					if (progressArgs.ProgressPercentage > percentageCompleted + 10)
