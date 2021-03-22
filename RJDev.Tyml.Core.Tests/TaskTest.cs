@@ -1,7 +1,10 @@
 using System;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
+using RJDev.Outputter.Sinks.Console;
+using RJDev.Outputter.Sinks.Console.Themes;
 using RJDev.Tyml.Core.Tasks;
 using Xunit;
 using Xunit.Abstractions;
@@ -23,6 +26,13 @@ namespace RJDev.Tyml.Core.Tests
 			IServiceProvider serviceProvider = GetServiceProvider();
 			TymlContext context = GetContext();
 			TymlExecutor executor = serviceProvider.GetRequiredService<TymlExecutor>();
+			
+			using ConsoleSink sink = new ConsoleSink(
+				new ConsoleSinkOptions(ColorTheme.DarkConsole)
+				{
+					ConsoleEncoding = Encoding.UTF8
+				}
+			);
 
 			string yaml = @"
 steps:
@@ -32,11 +42,10 @@ steps:
       Script: 'echo Hello World!'
 ";
 
-			var results = await executor.Execute(context, yaml);
-
-			foreach (TaskOutput taskOutput in results)
+			await foreach (TaskExecution execution in executor.Execute(context, yaml))
 			{
-				this.testOutputHelper.WriteLine(taskOutput.Output);
+				await execution.OutputReader.Pipe(sink);
+				await execution.Completion();
 			}
 		}
 
@@ -53,9 +62,30 @@ steps:
     displayName: 'Task containing long delay to test abort'
 ";
 
-			var cts = new CancellationTokenSource(TimeSpan.FromSeconds(2));
+			var cts = new CancellationTokenSource(TimeSpan.FromSeconds(1));
 
-			await Assert.ThrowsAsync<TaskCanceledException>(async () => { await executor.Execute(context, yaml, cts.Token); });
+			await Assert.ThrowsAsync<TaskCanceledException>(async () =>
+			{
+				await foreach (TaskExecution execution in executor.Execute(context, yaml, cts.Token)) ;
+			});
+		}
+
+		[Fact]
+		public async Task NotAbortTaskTest()
+		{
+			IServiceProvider serviceProvider = GetServiceProvider();
+			TymlContext context = GetContext();
+			TymlExecutor executor = serviceProvider.GetRequiredService<TymlExecutor>();
+
+			string yaml = @"
+steps:
+  - task: LongDelay
+    displayName: 'Task containing long delay to test abort'
+";
+
+			var cts = new CancellationTokenSource(TimeSpan.FromSeconds(4));
+			await foreach (TaskExecution _ in executor.Execute(context, yaml, cts.Token)) ;
+			Assert.False(cts.IsCancellationRequested);
 		}
 	}
 }

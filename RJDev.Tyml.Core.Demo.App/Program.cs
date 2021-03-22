@@ -23,6 +23,9 @@ namespace RJDev.Tyml.Core.Demo.App
 			
 			using ConsoleSink sink = new ConsoleSink(
 				new ConsoleSinkOptions(ColorTheme.DarkConsole)
+				{
+					ConsoleEncoding = Encoding.Default
+				}
 			);
 
 			string yaml = @"
@@ -31,14 +34,27 @@ steps:
     displayName: 'Echo the most important message'
     inputs:
       Script: 'echo Hello World!'
+
+  - task: LongDelay
+    displayName: 'Task containing long delay to test abort'
+
+  - task: Cmd
+    displayName: 'Echo the most important message'
+    inputs:
+      Script: 'echo First delay done'
+
+  - task: LongDelay
+    displayName: 'Task containing long delay to test abort'
+
+  - task: Cmd
+    displayName: 'Echo the most important message'
+    inputs:
+      Script: 'echo Second delay done'
 ";
 
-			var results = await executor.Execute(context, yaml);
-
-			foreach (TaskOutput taskOutput in results)
+			await foreach (TaskExecution execution in executor.Execute(context, yaml))
 			{
-				await taskOutput.Output.Pipe(sink);
-				// this.testOutputHelper.WriteLine(taskOutput.Output);
+				await execution.OutputReader.Pipe(sink);
 			}
 		}
 		

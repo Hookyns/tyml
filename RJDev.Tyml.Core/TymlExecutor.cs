@@ -1,6 +1,4 @@
 using System;
-using System.Collections.Generic;
-using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using RJDev.Outputter;
@@ -9,7 +7,7 @@ using RJDev.Tyml.Core.Yml;
 
 namespace RJDev.Tyml.Core
 {
-	public class TymlExecutor
+	public sealed class TymlExecutor
 	{
 		/// <summary>
 		/// Width of HorizontalLine in text output of tasks
@@ -43,33 +41,10 @@ namespace RJDev.Tyml.Core
 		/// <param name="ymlContent">YAML configuration file content.</param>
 		/// <param name="cancellationToken"></param>
 		/// <exception cref="InvalidOperationException"></exception>
-		public async Task<IList<TaskOutput>> Execute(TymlContext context, string ymlContent, CancellationToken cancellationToken = default)
+		public TymlExecution Execute(TymlContext context, string ymlContent, CancellationToken cancellationToken = default)
 		{
 			RootConfiguration config = this.parser.Parse(ymlContent, context);
-			List<TaskOutput> outputs = new(config.Steps.Count);
-
-			// Change Console.Out & Error to NULL
-			TextWriter consoleTextWriter = Console.Out;
-			TextWriter consoleErrorTextWriter = Console.Error;
-			Console.SetOut(TextWriter.Null);
-			Console.SetError(TextWriter.Null);
-
-			try
-			{
-				// List of outputs
-				foreach (TaskConfiguration step in config.Steps)
-				{
-					await this.ExecuteTask(context, step, config, cancellationToken, outputs);
-				}
-			}
-			finally
-			{
-				// Restore Console.Out & Error
-				Console.SetOut(consoleTextWriter);
-				Console.SetOut(consoleErrorTextWriter);
-			}
-
-			return outputs;
+			return new TymlExecution(this, context, config, cancellationToken);
 		}
 
 		/// <summary>
@@ -79,9 +54,8 @@ namespace RJDev.Tyml.Core
 		/// <param name="step"></param>
 		/// <param name="config"></param>
 		/// <param name="cancellationToken"></param>
-		/// <param name="outputs"></param>
 		/// <exception cref="InvalidOperationException"></exception>
-		private async Task ExecuteTask(TymlContext context, TaskConfiguration step, RootConfiguration config, CancellationToken cancellationToken, ICollection<TaskOutput> outputs)
+		internal TaskExecution ExecuteTask(TymlContext context, TaskConfiguration step, RootConfiguration config, CancellationToken cancellationToken)
 		{
 			string taskDisplayName = step.DisplayName ?? step.Task;
 			TaskInfo taskInfo = context.GetTask(step.Task);
@@ -92,18 +66,29 @@ namespace RJDev.Tyml.Core
 				throw new InvalidOperationException($"Required service '{taskInfo.Type.FullName}' not registered.");
 			}
 
-			Outputter.Outputter outputter = new(cancellationToken);
+			// Construct TaskExecution
+			TaskExecution taskExecution = new(step.Task, taskDisplayName, cancellationToken);
 
-			// Construct TaskContext
-			TaskContext taskContext = new(context, config.Variables, taskInfo, outputter.OutputWriter);
+			Task.Run(async () =>
+			{
+				TaskCompletionStatus status = TaskCompletionStatus.Error;
+				
+				try
+				{
+					// Construct TaskContext
+					TaskContext taskContext = new(context, config.Variables, taskInfo, taskExecution.OutputWriter);
 
-			// Execute task and log info about it into output
-			TaskCompletionStatus status = await ExecuteTaskWithLog(step, taskContext, taskDisplayName, task, cancellationToken);
+					// Execute task and log info about it into output
+					status = await ExecuteTaskWithLog(step, taskContext, taskDisplayName, task, cancellationToken);
+				}
+				finally
+				{
+					// Complete TaskExecution
+					taskExecution.Complete(status);
+				}
+			}, cancellationToken);
 
-			// Complete outputter
-			outputter.Complete();
-			
-			outputs.Add(new TaskOutput(step.Task, taskDisplayName, status, outputter.OutputReader));
+			return taskExecution;
 		}
 
 		/// <summary>

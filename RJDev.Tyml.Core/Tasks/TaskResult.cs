@@ -2,7 +2,7 @@ using RJDev.Outputter;
 
 namespace RJDev.Tyml.Core.Tasks
 {
-	public class TaskOutput
+	public sealed class TaskResult
 	{
 		/// <summary>
 		/// Display name of task
@@ -10,14 +10,14 @@ namespace RJDev.Tyml.Core.Tasks
 		public string DisplayName { get; }
 
 		/// <summary>
-		/// Task's completion status.
-		/// </summary>
-		public TaskCompletionStatus Status { get; }
-
-		/// <summary>
 		/// Name identifier of task
 		/// </summary>
 		public string Name { get; }
+		
+		/// <summary>
+		/// Task's completion status.
+		/// </summary>
+		public TaskCompletionStatus Status { get; }
 
 		/// <summary>
 		/// Reader of tasks output
@@ -31,7 +31,7 @@ namespace RJDev.Tyml.Core.Tasks
 		/// <param name="displayName"></param>
 		/// <param name="taskCompletionStatus"></param>
 		/// <param name="outputReader"></param>
-		public TaskOutput(string name, string displayName, TaskCompletionStatus taskCompletionStatus, OutputReader outputReader)
+		public TaskResult(string name, string displayName, TaskCompletionStatus taskCompletionStatus, OutputReader outputReader)
 		{
 			this.Name = name;
 			this.DisplayName = displayName;

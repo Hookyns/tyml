@@ -9,11 +9,12 @@ namespace RJDev.Tyml.Core.Tests.TestTasks.Cmd
 	[TymlTask("Cmd", "Execute command on cmd.exe")]
 	public class CmdTask : TaskBase<CmdInputs>
 	{
-		protected override Task Execute(TaskContext context, CmdInputs inputs, CancellationToken cancellationToken)
+		protected override Task<TaskCompletionStatus> Execute(TaskContext context, CmdInputs inputs, CancellationToken cancellationToken)
 		{
 			Process cmd = ExecutePlatformCmd(inputs);
 			cmd.WaitForExit();
-			return context.Output.WriteLineAsync(cmd.StandardOutput.ReadToEnd());
+			context.Out.WriteLine(cmd.StandardOutput.ReadToEnd());
+			return this.OkSync();
 		}
 
 		/// <summary>
