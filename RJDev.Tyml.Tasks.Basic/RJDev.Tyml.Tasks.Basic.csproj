@@ -2,7 +2,7 @@
 
 	<PropertyGroup>
 		<PackageId>RJDev.Tyml.Tasks.Basic</PackageId>
-		<Version>2.0.2</Version>
+		<Version>2.0.1</Version>
 		<Authors>Roman Jámbor</Authors>
 		<Company>Roman Jámbor</Company>
 		<Description>Implementation of basic tasks for RJDev.Tyml.</Description>
