@@ -119,7 +119,9 @@ steps:
 			}
 			else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
 			{
-				pwdCmd = "$PWD";
+				// Commented out, cuz of Github Actions; I don't know how to echo pwd, all is unknown.
+				// pwdCmd = "$PWD";
+				return;
 			}
 			else
 			{
