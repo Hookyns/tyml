@@ -5,9 +5,12 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using RJDev.Core.Extensibility;
+using RJDev.Outputter.Sinks.Console;
+using RJDev.Outputter.Sinks.Console.Themes;
 using RJDev.Tyml.Core;
 using RJDev.Tyml.Core.Tasks;
 using RJDev.Tyml.Tasks.Basic.Cmd;
+using RJDev.Tyml.Tasks.Basic.DownloadFile;
 using RJDev.Tyml.Tasks.Basic.ExtractFile;
 using Serilog;
 using Serilog.Events;
@@ -55,7 +58,7 @@ namespace RJDev.Tyml.Executable
 			string ymlContent = await File.ReadAllTextAsync(ymlPath);
 
 			TymlContext tymlContext = new TymlContextBuilder()
-				.UseTasks(typeof(TestTask), typeof(CmdTask), typeof(ExtractFilesTask))
+				.AddTasks(typeof(TestTask), typeof(CmdTask), typeof(ExtractFilesTask), typeof(DownloadFileTask))
 				.UseWorkingDirectory(path)
 				.WithBaseVariables(new Dictionary<string, object>()
 				{
@@ -65,13 +68,11 @@ namespace RJDev.Tyml.Executable
 				.Build();
 
 			TymlExecutor tymlExecutor = provider.GetRequiredService<TymlExecutor>();
-			var outputs = await tymlExecutor.Execute(tymlContext, ymlContent);
-
-			Console.WriteLine("Task outputs:");
-			foreach (TaskOutput taskOutput in outputs)
+			using ConsoleSink sink = new ConsoleSink(new ConsoleSinkOptions(ColorTheme.DarkConsole));
+			
+			await foreach (TaskExecution execution in tymlExecutor.Execute(tymlContext, ymlContent))
 			{
-				Console.WriteLine(taskOutput.DisplayName);
-				Console.WriteLine(taskOutput.Output);
+				await execution.OutputReader.Pipe(sink);
 			}
 		}
 
@@ -92,6 +93,7 @@ namespace RJDev.Tyml.Executable
 						services.AddTransient<TestTask>();
 						services.AddTransient<CmdTask>();
 						services.AddTransient<ExtractFilesTask>();
+						services.AddTransient<DownloadFileTask>();
 					})
 					// .UseContentRoot(AppContext.BaseDirectory);
 					.UseConsoleLifetime()

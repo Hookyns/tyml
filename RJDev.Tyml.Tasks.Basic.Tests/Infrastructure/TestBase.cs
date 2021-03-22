@@ -18,7 +18,7 @@ namespace RJDev.Tyml.Tasks.Basic.Tests.Infrastructure
 		protected static TymlContext GetContext()
 		{
 			return new TymlContextBuilder()
-				.UseTasks(typeof(CmdTask), typeof(ExtractFilesTask), typeof(DownloadFileTask))
+				.AddTasks(typeof(CmdTask), typeof(ExtractFilesTask), typeof(DownloadFileTask))
 				.UseWorkingDirectory(Path.Combine(Directory.GetCurrentDirectory(), "work-dir"))
 				.WithBaseVariables(new Dictionary<string, object>()
 				{

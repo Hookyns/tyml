@@ -21,12 +21,7 @@ namespace RJDev.Tyml.Core.Demo.App
 			TymlContext context = GetContext();
 			TymlExecutor executor = serviceProvider.GetRequiredService<TymlExecutor>();
 			
-			using ConsoleSink sink = new ConsoleSink(
-				new ConsoleSinkOptions(ColorTheme.DarkConsole)
-				{
-					ConsoleEncoding = Encoding.Default
-				}
-			);
+			using ConsoleSink sink = new ConsoleSink(new ConsoleSinkOptions(ColorTheme.DarkConsole));
 
 			string yaml = @"
 steps:

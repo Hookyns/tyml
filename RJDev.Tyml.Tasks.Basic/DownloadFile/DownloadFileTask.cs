@@ -3,6 +3,7 @@ using System.IO;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
+using RJDev.Outputter;
 using RJDev.Tyml.Core;
 using RJDev.Tyml.Core.Tasks;
 
@@ -11,17 +12,17 @@ namespace RJDev.Tyml.Tasks.Basic.DownloadFile
 	[TymlTask("DownloadFile")]
 	public class DownloadFileTask : TaskBase<DownloadFileInputs>
 	{
-		protected override Task Execute(TaskContext context, DownloadFileInputs inputs, CancellationToken cancellationToken)
+		protected override Task<TaskCompletionStatus> Execute(TaskContext context, DownloadFileInputs inputs, CancellationToken cancellationToken)
 		{
 			using WebClient client = new();
-			TaskCompletionSource<bool> tcs = new();
+			TaskCompletionSource<TaskCompletionStatus> tcs = new();
 
 			try
 			{
 				int percentageCompleted = 0;
 
 				// Download events event
-				client.DownloadFileCompleted += (_, _) => { tcs.SetResult(true); };
+				client.DownloadFileCompleted += (_, _) => { tcs.SetResult(TaskCompletionStatus.Ok); };
 				client.DownloadProgressChanged += (sender, progressArgs) =>
 				{
 					if (progressArgs.ProgressPercentage > percentageCompleted + 10)
@@ -29,7 +30,7 @@ namespace RJDev.Tyml.Tasks.Basic.DownloadFile
 						percentageCompleted = progressArgs.ProgressPercentage;
 
 						// Write into output
-						context.Output.WriteLine($"Progress: {progressArgs.BytesReceived / 1000.0:N2}/{progressArgs.TotalBytesToReceive / 1000.0:N2} kB");
+						context.Out.WriteLine($"Progress: {progressArgs.BytesReceived / 1000.0:N2}/{progressArgs.TotalBytesToReceive / 1000.0:N2} kB", EntryType.Minor);
 					}
 				};
 
@@ -37,7 +38,7 @@ namespace RJDev.Tyml.Tasks.Basic.DownloadFile
 				string destination = ResolveDestinationPath(context, inputs, fileUri);
 
 				// Write into output
-				context.Output.WriteLine($"Downloading file {fileUri} into {destination}");
+				context.Out.WriteLine($"Downloading file {fileUri} into {destination}");
 
 				// Register cance action
 				cancellationToken.Register(client.CancelAsync);
@@ -47,7 +48,10 @@ namespace RJDev.Tyml.Tasks.Basic.DownloadFile
 			}
 			catch (Exception ex)
 			{
-				tcs.SetException(ex);
+				context.Out.WriteLine("File download failed.", EntryType.Error);
+				context.Out.WriteLine(ex.Message, EntryType.Error);
+				context.Out.WriteLine(ex.StackTrace ?? string.Empty, EntryType.Minor);
+				tcs.SetResult(TaskCompletionStatus.Error);
 			}
 
 			return tcs.Task;

@@ -10,6 +10,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RJDev.Tyml.Tasks.Basic.Test
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RJDev.Tyml.Core.Tests", "RJDev.Tyml.Core.Tests\RJDev.Tyml.Core.Tests.csproj", "{937F4F51-0D6A-4BCC-962B-702BE0DD0253}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RJDev.Tyml.Core.Demo.App", "RJDev.Tyml.Core.Demo.App\RJDev.Tyml.Core.Demo.App.csproj", "{2769FEC5-17AF-46E0-B9FE-BA44C1BCDB6F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -36,5 +38,9 @@ Global
 		{937F4F51-0D6A-4BCC-962B-702BE0DD0253}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{937F4F51-0D6A-4BCC-962B-702BE0DD0253}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{937F4F51-0D6A-4BCC-962B-702BE0DD0253}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2769FEC5-17AF-46E0-B9FE-BA44C1BCDB6F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2769FEC5-17AF-46E0-B9FE-BA44C1BCDB6F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2769FEC5-17AF-46E0-B9FE-BA44C1BCDB6F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2769FEC5-17AF-46E0-B9FE-BA44C1BCDB6F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

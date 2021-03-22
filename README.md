@@ -8,7 +8,7 @@ TYML is library able to take YAML file in given format and process its instructi
 ### Configuration
 ```c#
 TymlContext tymlContext = new TymlContextBuilder()
-    .UseTasks(typeof(CmdTask))
+    .AddTasks(typeof(CmdTask))
     .UseWorkingDirectory(path)
     .WithBaseVariables(new Dictionary<string, object>()
     {
@@ -18,9 +18,19 @@ TymlContext tymlContext = new TymlContextBuilder()
     .Build();
     
 TymlExecutor tymlExecutor = provider.GetRequiredService<TymlExecutor>();
-
-IList<TaskOutput> exec1Outputs = await tymlExecutor.Execute(tymlContext, CONTENT_OF_YAML_FILE);
-IList<TaskOutput> exec2Outputs = await tymlExecutor.Execute(tymlContext, CONTENT_OF_SOME_OTHER_YAML_FILE);
+	
+using (ConsoleSink sink = new ConsoleSink(new ConsoleSinkOptions(ColorTheme.DarkConsole))) 
+{
+	await foreach (TaskExecution execution in tymlExecutor.Execute(tymlContext, CONTENT_OF_YAML_FILE))
+	{
+		await execution.OutputReader.Pipe(sink);
+	}
+	
+	await foreach (TaskExecution execution in tymlExecutor.Execute(tymlContext, CONTENT_OF_SOME_OTHER_YAML_FILE))
+	{
+		await execution.OutputReader.Pipe(sink);
+	}
+}
 ```
 
 ### YAML Format
@@ -54,10 +64,10 @@ If You want to publish your packages to NuGet, it would be nice to keep some nam
 [TymlTask("Cmd", "Optional task description")]
 public class CmdTask : TaskBase<CmdTaskConfig>
 {
-    protected override async Task Execute(TaskContext context, CmdTaskConfig inputs)
-    {
-        await context.Output.WriteLineAsync($"Script: {inputs.Script} with args: {string.Join("; ", inputs.Args.Select(entry => entry.Key + ":" + entry.Value))}");
-        return Task.CompletedTask;
-    }
+	protected override Task<TaskCompletionStatus> Execute(TaskContext context, CmdInputs inputs, CancellationToken cancellationToken)
+	{
+        context.Out.WriteLine($"Script: {inputs.Script} with args: {string.Join("; ", inputs.Args.Select(entry => entry.Key + ":" + entry.Value))}");
+		return this.OkSync();
+	}
 }
 ```

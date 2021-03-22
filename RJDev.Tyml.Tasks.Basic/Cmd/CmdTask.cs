@@ -10,11 +10,12 @@ namespace RJDev.Tyml.Tasks.Basic.Cmd
 	[TymlTask("Cmd")]
 	public class CmdTask : TaskBase<CmdInputs>
 	{
-		protected override Task Execute(TaskContext context, CmdInputs inputs, CancellationToken _)
+		protected override Task<TaskCompletionStatus> Execute(TaskContext context, CmdInputs inputs, CancellationToken _)
 		{
 			Process cmd = ExecutePlatformCmd(context, inputs);
 			cmd.WaitForExit();
-			return context.Output.WriteLineAsync(cmd.StandardOutput.ReadToEnd());
+			context.Out.WriteLine(cmd.StandardOutput.ReadToEnd());
+			return this.OkSync();
 		}
 
 		/// <summary>
@@ -82,6 +83,7 @@ namespace RJDev.Tyml.Tasks.Basic.Cmd
 			cmd.StartInfo.UseShellExecute = false;
 			cmd.StartInfo.RedirectStandardInput = true;
 			cmd.StartInfo.RedirectStandardOutput = true;
+			cmd.StartInfo.RedirectStandardError = true;
 			return cmd;
 		}
 	}

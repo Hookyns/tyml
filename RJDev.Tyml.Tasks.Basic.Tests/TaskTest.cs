@@ -1,10 +1,11 @@
 using System;
 using System.IO;
-using System.Linq;
 using System.Runtime.InteropServices;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
+using RJDev.Outputter.Sinks;
 using RJDev.Tyml.Core;
 using RJDev.Tyml.Core.Tasks;
 using RJDev.Tyml.Tasks.Basic.Tests.Infrastructure;
@@ -37,11 +38,12 @@ steps:
       Script: 'echo Hello Tyml!'
 ";
 
-			var results = await executor.Execute(context, yaml);
-
-			foreach (TaskOutput taskOutput in results)
+			SimpleLambdaSink sink = new SimpleLambdaSink(entry => this.testOutputHelper.WriteLine(entry.ToString()));
+			
+			await foreach (TaskExecution execution in executor.Execute(context, yaml))
 			{
-				testOutputHelper.WriteLine(taskOutput.Output);
+				await execution.OutputReader.Pipe(sink);
+				await execution.Completion();
 			}
 		}
 
@@ -62,11 +64,12 @@ steps:
       Overwrite: true
 ";
 
-			var results = await executor.Execute(context, yaml);
-
-			foreach (TaskOutput taskOutput in results)
+			SimpleLambdaSink sink = new SimpleLambdaSink(entry => this.testOutputHelper.WriteLine(entry.ToString()));
+			
+			await foreach (TaskExecution execution in executor.Execute(context, yaml))
 			{
-				testOutputHelper.WriteLine(taskOutput.Output);
+				await execution.OutputReader.Pipe(sink);
+				await execution.Completion();
 			}
 		}
 
@@ -87,16 +90,18 @@ steps:
   - task: ExtractFiles
     displayName: 'Extract test.zip file'
     inputs:
-      ArchiveFilePattern: '*.zip'
+      ArchiveFilePattern: 'tes*.zip'
       Destination: './'
       Overwrite: true
 ";
 
-			var results = await executor.Execute(context, yaml);
-
-			foreach (TaskOutput taskOutput in results)
+			SimpleLambdaSink sink = new SimpleLambdaSink(entry => this.testOutputHelper.WriteLine(entry.ToString()));
+			
+			await foreach (TaskExecution execution in executor.Execute(context, yaml))
 			{
-				testOutputHelper.WriteLine(taskOutput.Output);
+				await execution.OutputReader.Pipe(sink);
+				TaskResult result = await execution.Completion();
+				Assert.Equal(TaskCompletionStatus.Ok, result.Status);
 			}
 		}
 
@@ -117,17 +122,19 @@ steps:
       Script: 'cd'
 ";
 
-				var results = await executor.Execute(context, yaml);
-
-				foreach (TaskOutput taskOutput in results)
+				StringBuilder sb = new StringBuilder();
+				SimpleLambdaSink sink = new SimpleLambdaSink(entry => this.testOutputHelper.WriteLine(entry.ToString().TrimEnd('\r', '\n')));
+			
+				await foreach (TaskExecution execution in executor.Execute(context, yaml))
 				{
-					testOutputHelper.WriteLine(taskOutput.Output);
+					await execution.OutputReader.Pipe(sink);
+					await execution.Completion();
+
+					string workDir = Path.Combine(Directory.GetCurrentDirectory(), "work-dir");
+
+					// Output contains
+					Assert.Contains(workDir + ">cd" + Environment.NewLine + workDir + Environment.NewLine, sb.ToString());
 				}
-
-				string workDir = Path.Combine(Directory.GetCurrentDirectory(), "work-dir");
-
-				// Output contains
-				Assert.Contains(workDir + ">cd" + Environment.NewLine + workDir + Environment.NewLine, results.First().Output);
 			}
 			else
 			{
@@ -145,18 +152,19 @@ steps:
 			string yaml = @"
 steps:
   - task: DownloadFile
-    displayName: 'Download 10 MB test file'
+    displayName: 'Download 5 MB test file'
     inputs:
-      Url: 'http://212.183.159.230/10MB.zip'
+      Url: 'http://212.183.159.230/5MB.zip'
       Destination: './'
 ";
 
-			var cts = new CancellationTokenSource(TimeSpan.FromSeconds(2));
-			var results = await executor.Execute(context, yaml, cts.Token);
-
-			foreach (TaskOutput taskOutput in results)
+			var cts = new CancellationTokenSource(TimeSpan.FromSeconds(10));
+			SimpleLambdaSink sink = new SimpleLambdaSink(entry => this.testOutputHelper.WriteLine(entry.ToString().TrimEnd('\r', '\n')));
+			
+			await foreach (TaskExecution execution in executor.Execute(context, yaml, cts.Token))
 			{
-				testOutputHelper.WriteLine(taskOutput.Output);
+				await execution.OutputReader.Pipe(sink);
+				await execution.Completion();
 			}
 		}
 	}

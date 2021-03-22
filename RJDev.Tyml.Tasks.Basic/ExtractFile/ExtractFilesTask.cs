@@ -3,6 +3,7 @@ using System.IO;
 using System.IO.Compression;
 using System.Threading;
 using System.Threading.Tasks;
+using RJDev.Outputter;
 using RJDev.Tyml.Core;
 using RJDev.Tyml.Core.Tasks;
 
@@ -11,7 +12,7 @@ namespace RJDev.Tyml.Tasks.Basic.ExtractFile
 	[TymlTask("ExtractFiles")]
 	public class ExtractFilesTask : TaskBase<ExtractFilesInputs>
 	{
-		protected override Task Execute(TaskContext context, ExtractFilesInputs inputs, CancellationToken _)
+		protected override Task<TaskCompletionStatus> Execute(TaskContext context, ExtractFilesInputs inputs, CancellationToken _)
 		{
 			string[] filePaths = Directory.GetFiles(context.TymlContext.WorkingDirectory, inputs.ArchiveFilePattern);
 
@@ -22,7 +23,7 @@ namespace RJDev.Tyml.Tasks.Basic.ExtractFile
 					string destination = ResolveDestinationPath(context, inputs, filePath);
 
 					// Log extraction
-					context.Output.WriteLine($"Extracting file {filePath} into {destination}");
+					context.Out.WriteLine($"Extracting file {filePath} into {destination}.");
 
 					ZipFile.ExtractToDirectory(
 						filePath,
@@ -32,11 +33,14 @@ namespace RJDev.Tyml.Tasks.Basic.ExtractFile
 				}
 				catch (Exception ex)
 				{
-					context.Output.WriteLine("ERROR: " + ex.Message + Environment.NewLine + ex.StackTrace);
+					context.Out.WriteLine("Extraction of files failed.", EntryType.Error);
+					context.Out.WriteLine(ex.Message, EntryType.Error);
+					context.Out.WriteLine(ex.StackTrace ?? string.Empty, EntryType.Minor);
+					return this.ErrorSync();
 				}
 			}
 
-			return Task.CompletedTask;
+			return this.OkSync();
 		}
 
 		/// <summary>
