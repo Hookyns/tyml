@@ -119,7 +119,7 @@ steps:
 			}
 			else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
 			{
-				pwdCmd = "pwd";
+				pwdCmd = "$PWD";
 			}
 			else
 			{
@@ -136,7 +136,7 @@ steps:
 ";
 
 			StringBuilder sb = new();
-			SimpleLambdaSink sink = new(entry => sb.AppendLine(entry.ToString().TrimEnd()));
+			SimpleLambdaSink sink = new(entry => sb.Append(entry));
 
 			await foreach (TaskExecution execution in executor.Execute(context, yaml))
 			{
@@ -145,8 +145,15 @@ steps:
 
 				string workDir = Path.Combine(Directory.GetCurrentDirectory(), "work-dir");
 
-				// Output contains
-				Assert.Contains(pwdCmd + Environment.NewLine + workDir + Environment.NewLine, sb.ToString());
+				// Output contains PWD
+				if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+				{
+					Assert.Contains(pwdCmd + Environment.NewLine + workDir + Environment.NewLine, sb.ToString());
+				}
+				else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+				{
+					Assert.Contains(pwdCmd + Environment.NewLine + "bash: " + workDir + ":", sb.ToString());
+				}
 			}
 		}
 
