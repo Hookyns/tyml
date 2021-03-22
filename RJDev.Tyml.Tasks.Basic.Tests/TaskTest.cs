@@ -123,7 +123,7 @@ steps:
 ";
 
 				StringBuilder sb = new StringBuilder();
-				SimpleLambdaSink sink = new SimpleLambdaSink(entry => this.testOutputHelper.WriteLine(entry.ToString().TrimEnd('\r', '\n')));
+				SimpleLambdaSink sink = new SimpleLambdaSink(entry => sb.AppendLine(entry.ToString().TrimEnd('\r', '\n')));
 			
 				await foreach (TaskExecution execution in executor.Execute(context, yaml))
 				{
@@ -164,7 +164,8 @@ steps:
 			await foreach (TaskExecution execution in executor.Execute(context, yaml, cts.Token))
 			{
 				await execution.OutputReader.Pipe(sink);
-				await execution.Completion();
+				TaskResult result = await execution.Completion();
+				Assert.Equal(TaskCompletionStatus.Ok, result.Status);
 			}
 		}
 
