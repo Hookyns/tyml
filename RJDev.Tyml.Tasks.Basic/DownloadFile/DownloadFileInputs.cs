@@ -1,3 +1,5 @@
+using System.ComponentModel.DataAnnotations;
+
 namespace RJDev.Tyml.Tasks.Basic.DownloadFile
 {
 	public class DownloadFileInputs
@@ -5,11 +7,13 @@ namespace RJDev.Tyml.Tasks.Basic.DownloadFile
 		/// <summary>
 		/// Url address of file which should be downladed.
 		/// </summary>
-		public string Url { get; set; }
+		[Required]
+		public string Url { get; set; } = null!;
 
 		/// <summary>
 		/// Destination folder
 		/// </summary>
-		public string Destination { get; set; }
+		[Required]
+		public string Destination { get; set; } = null!;
 	}
 }

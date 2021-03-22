@@ -39,7 +39,7 @@ steps:
 ";
 
 			SimpleLambdaSink sink = new SimpleLambdaSink(entry => this.testOutputHelper.WriteLine(entry.ToString()));
-			
+
 			await foreach (TaskExecution execution in executor.Execute(context, yaml))
 			{
 				await execution.OutputReader.Pipe(sink);
@@ -65,7 +65,7 @@ steps:
 ";
 
 			SimpleLambdaSink sink = new SimpleLambdaSink(entry => this.testOutputHelper.WriteLine(entry.ToString()));
-			
+
 			await foreach (TaskExecution execution in executor.Execute(context, yaml))
 			{
 				await execution.OutputReader.Pipe(sink);
@@ -96,7 +96,7 @@ steps:
 ";
 
 			SimpleLambdaSink sink = new SimpleLambdaSink(entry => this.testOutputHelper.WriteLine(entry.ToString()));
-			
+
 			await foreach (TaskExecution execution in executor.Execute(context, yaml))
 			{
 				await execution.OutputReader.Pipe(sink);
@@ -111,34 +111,42 @@ steps:
 			IServiceProvider serviceProvider = GetServiceProvider();
 			TymlContext context = GetContext();
 			TymlExecutor executor = serviceProvider.GetRequiredService<TymlExecutor>();
+			string pwdCmd;
 
 			if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
 			{
-				string yaml = @"
-steps:
-  - task: Cmd
-    displayName: 'Echo working directory'
-    inputs:
-      Script: 'cd'
-";
-
-				StringBuilder sb = new StringBuilder();
-				SimpleLambdaSink sink = new SimpleLambdaSink(entry => sb.AppendLine(entry.ToString().TrimEnd('\r', '\n')));
-			
-				await foreach (TaskExecution execution in executor.Execute(context, yaml))
-				{
-					await execution.OutputReader.Pipe(sink);
-					await execution.Completion();
-
-					string workDir = Path.Combine(Directory.GetCurrentDirectory(), "work-dir");
-
-					// Output contains
-					Assert.Contains(workDir + ">cd" + Environment.NewLine + workDir + Environment.NewLine, sb.ToString());
-				}
+				pwdCmd = "cd";
+			}
+			else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+			{
+				pwdCmd = "pwd";
 			}
 			else
 			{
 				Assert.True(false, "This test is not implemented on this platform.");
+				return;
+			}
+			
+			string yaml = $@"
+steps:
+  - task: Cmd
+    displayName: 'Echo working directory'
+    inputs:
+      Script: '{pwdCmd}'
+";
+
+			StringBuilder sb = new();
+			SimpleLambdaSink sink = new(entry => sb.AppendLine(entry.ToString().TrimEnd()));
+
+			await foreach (TaskExecution execution in executor.Execute(context, yaml))
+			{
+				await execution.OutputReader.Pipe(sink);
+				await execution.Completion();
+
+				string workDir = Path.Combine(Directory.GetCurrentDirectory(), "work-dir");
+
+				// Output contains
+				Assert.Contains(pwdCmd + Environment.NewLine + workDir + Environment.NewLine, sb.ToString());
 			}
 		}
 
@@ -160,7 +168,7 @@ steps:
 
 			var cts = new CancellationTokenSource(TimeSpan.FromSeconds(10));
 			SimpleLambdaSink sink = new SimpleLambdaSink(entry => this.testOutputHelper.WriteLine(entry.ToString().TrimEnd('\r', '\n')));
-			
+
 			await foreach (TaskExecution execution in executor.Execute(context, yaml, cts.Token))
 			{
 				await execution.OutputReader.Pipe(sink);

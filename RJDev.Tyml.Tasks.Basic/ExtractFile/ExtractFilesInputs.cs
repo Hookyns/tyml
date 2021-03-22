@@ -1,3 +1,5 @@
+using System.ComponentModel.DataAnnotations;
+
 namespace RJDev.Tyml.Tasks.Basic.ExtractFile
 {
 	public class ExtractFilesInputs
@@ -8,12 +10,14 @@ namespace RJDev.Tyml.Tasks.Basic.ExtractFile
 		/// <remarks>
 		/// Can contain base wildcard characters (* and ?).
 		/// </remarks>
-		public string ArchiveFilePattern { get; set; }
+		[Required]
+		public string ArchiveFilePattern { get; set; } = null!;
 
 		/// <summary>
 		/// Destination folder
 		/// </summary>
-		public string Destination { get; set; }
+		[Required]
+		public string Destination { get; set; } = null!;
 
 		/// <summary>
 		/// Overwrite existing files if exists.
