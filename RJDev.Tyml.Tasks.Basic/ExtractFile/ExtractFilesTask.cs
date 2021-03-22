@@ -57,7 +57,7 @@ namespace RJDev.Tyml.Tasks.Basic.ExtractFile
 			// Resolve relative path if it is not absolute
 			if (!Path.IsPathRooted(destination))
 			{
-				destination = Path.GetFullPath(inputs.Destination, context.TymlContext.WorkingDirectory);
+				destination = Path.GetFullPath(destination, context.TymlContext.WorkingDirectory);
 			}
 
 			// Add directory to destination path by input file name
