@@ -7,12 +7,12 @@ namespace RJDev.Tyml.Core.Tasks
 		/// <summary>
 		/// Type of task
 		/// </summary>
-		public Type Type { get; set; }
+		public Type Type { get; }
 
 		/// <summary>
 		/// Attribute of task
 		/// </summary>
-		public TymlTaskAttribute Attribute { get; set; }
+		public TymlTaskAttribute Attribute { get; }
 
 		/// <summary>
 		/// Ctor

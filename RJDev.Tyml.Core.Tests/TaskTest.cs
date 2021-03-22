@@ -45,7 +45,6 @@ steps:
 			await foreach (TaskExecution execution in executor.Execute(context, yaml))
 			{
 				await execution.OutputReader.Pipe(sink);
-				await execution.Completion();
 			}
 		}
 

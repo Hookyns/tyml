@@ -9,38 +9,56 @@ namespace RJDev.Tyml.Core
 	public sealed class TymlExecution : IAsyncEnumerable<TaskExecution>
 	{
 		/// <summary>
-		/// Tyml executor.
-		/// </summary>
-		private readonly TymlExecutor tymlExecutor;
-
-		/// <summary>
-		/// Tyml context
-		/// </summary>
-		private readonly TymlContext context;
-
-		/// <summary>
 		/// YAML root configuration.
 		/// </summary>
 		private readonly RootConfiguration rootConfiguration;
 
 		/// <summary>
-		/// Cancellation token
+		/// Cancellation token.
 		/// </summary>
 		private readonly CancellationToken cancellationToken;
 
 		/// <summary>
+		/// Task executor.
+		/// </summary>
+		private readonly TaskExecutor taskExecutor;
+
+		/// <summary>
 		/// Ctor
 		/// </summary>
-		/// <param name="tymlExecutor"></param>
+		/// <param name="serviceProvider"></param>
 		/// <param name="context"></param>
 		/// <param name="rootConfiguration"></param>
 		/// <param name="cancellationToken"></param>
-		public TymlExecution(TymlExecutor tymlExecutor, TymlContext context, RootConfiguration rootConfiguration, CancellationToken cancellationToken)
+		public TymlExecution(IServiceProvider serviceProvider, TymlContext context, RootConfiguration rootConfiguration, CancellationToken cancellationToken)
 		{
-			this.tymlExecutor = tymlExecutor;
-			this.context = context;
 			this.rootConfiguration = rootConfiguration;
 			this.cancellationToken = cancellationToken;
+			
+			// Create task executor to run all the steps in YAML file
+			this.taskExecutor = new TaskExecutor(serviceProvider, context, this.rootConfiguration);
+		}
+
+		/// <summary>
+		/// Return async enumerable.
+		/// </summary>
+		/// <param name="enumeratorCancellationToken"></param>
+		/// <returns></returns>
+		public async IAsyncEnumerator<TaskExecution> GetAsyncEnumerator(CancellationToken enumeratorCancellationToken = default)
+		{
+			using CancellationTokenSource cts = CancellationTokenSource.CreateLinkedTokenSource(this.cancellationToken, enumeratorCancellationToken);
+			
+			foreach (TaskConfiguration step in this.rootConfiguration.Steps)
+			{
+				if (cts.Token.IsCancellationRequested)
+				{
+					yield break;
+				}
+				
+				TaskExecution execution = this.taskExecutor.Execute(step, cts.Token);
+				yield return execution;
+				await execution.Completion();
+			}
 		}
 
 		// TODO: Make TymlExecution awaitable.
@@ -67,25 +85,5 @@ namespace RJDev.Tyml.Core
 		//
 		// 	return this.task.GetAwaiter();
 		// }
-
-		/// <summary>
-		/// Return async enumerable.
-		/// </summary>
-		/// <param name="cancellationToken"></param>
-		/// <returns></returns>
-		/// <exception cref="NotImplementedException"></exception>
-		public async IAsyncEnumerator<TaskExecution> GetAsyncEnumerator(CancellationToken cancellationToken = default)
-		{
-			// List of outputs
-			foreach (TaskConfiguration step in this.rootConfiguration.Steps)
-			{
-				using (CancellationTokenSource cts = CancellationTokenSource.CreateLinkedTokenSource(this.cancellationToken, cancellationToken))
-				{
-					TaskExecution execution = this.tymlExecutor.ExecuteTask(this.context, step, this.rootConfiguration, cts.Token);
-					yield return execution;
-					await execution.Completion();
-				}
-			}
-		}
 	}
 }

@@ -9,7 +9,7 @@ namespace RJDev.Tyml.Core
 		/// <summary>
 		/// Tasks
 		/// </summary>
-		private readonly Dictionary<string, TaskInfo> tasks;
+		private readonly IDictionary<string, TaskInfo> tasks;
 
 		/// <summary>
 		/// Working directory used as base directory for all operations.
@@ -24,7 +24,7 @@ namespace RJDev.Tyml.Core
 		/// <summary>
 		/// Construct Tyml context
 		/// </summary>
-		internal TymlContext(Dictionary<string, TaskInfo> tasks, string workingDirectory, Dictionary<string, object> baseVariables)
+		internal TymlContext(IDictionary<string, TaskInfo> tasks, string workingDirectory, IDictionary<string, object> baseVariables)
 		{
 			this.tasks = tasks;
 			this.WorkingDirectory = workingDirectory;

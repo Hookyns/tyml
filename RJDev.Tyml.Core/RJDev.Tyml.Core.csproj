@@ -2,7 +2,7 @@
 
 	<PropertyGroup>
 		<PackageId>RJDev.Tyml.Core</PackageId>
-		<Version>2.0.0</Version>
+		<Version>2.1.0</Version>
 		<Authors>Roman Jámbor</Authors>
 		<Company>Roman Jámbor</Company>
 		<Description>Library which is able to take YAML file in given format and process its instructions. It is like Your private local pipeline.</Description>

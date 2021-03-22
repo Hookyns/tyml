@@ -11,7 +11,18 @@ namespace RJDev.Tyml.Core.Tests.TestTasks.LongDelay
 	{
 		public async Task<TaskCompletionStatus> Execute(TaskContext context, IDictionary inputs, CancellationToken cancellationToken)
 		{
-			await Task.Delay(TimeSpan.FromSeconds(3), cancellationToken);
+			await Task.Delay(TimeSpan.FromMilliseconds(500), cancellationToken);
+			context.Out.WriteLine($"Now: {DateTime.Now}");
+			await Task.Delay(TimeSpan.FromMilliseconds(500), cancellationToken);
+			context.Out.WriteLine($"Now: {DateTime.Now}");
+			await Task.Delay(TimeSpan.FromMilliseconds(500), cancellationToken);
+			context.Out.WriteLine($"Now: {DateTime.Now}");
+			await Task.Delay(TimeSpan.FromMilliseconds(500), cancellationToken);
+			context.Out.WriteLine($"Now: {DateTime.Now}");
+			await Task.Delay(TimeSpan.FromMilliseconds(500), cancellationToken);
+			context.Out.WriteLine($"Now: {DateTime.Now}");
+			await Task.Delay(TimeSpan.FromMilliseconds(500), cancellationToken);
+			context.Out.WriteLine($"Now: {DateTime.Now}");
 			return TaskCompletionStatus.Ok;
 		}
 	}

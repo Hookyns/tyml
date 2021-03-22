@@ -1,6 +1,8 @@
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 using RJDev.Outputter;
+using RJDev.Tyml.Core.Yml;
 
 namespace RJDev.Tyml.Core.Tasks
 {
@@ -12,7 +14,7 @@ namespace RJDev.Tyml.Core.Tasks
 		/// <summary>
 		/// Display name of task
 		/// </summary>
-		public string DisplayName { get; }
+		public string? DisplayName { get; }
 
 		/// <summary>
 		/// Name identifier of task
@@ -32,14 +34,13 @@ namespace RJDev.Tyml.Core.Tasks
 		/// <summary>
 		/// Ctor
 		/// </summary>
-		/// <param name="name"></param>
-		/// <param name="displayName"></param>
+		/// <param name="step"></param>
 		/// <param name="cancellationToken"></param>
-		public TaskExecution(string name, string displayName, CancellationToken cancellationToken)
+		public TaskExecution(TaskConfiguration step, CancellationToken cancellationToken)
 		{
-			this.Name = name;
-			this.DisplayName = displayName;
-			this.outputter = new(cancellationToken);
+			this.Name = step.Task;
+			this.DisplayName = step.DisplayName;
+			this.outputter = new Outputter.Outputter(cancellationToken);
 
 			cancellationToken.Register(() =>
 			{
@@ -52,19 +53,39 @@ namespace RJDev.Tyml.Core.Tasks
 		/// Return Task's completion task.
 		/// </summary>
 		/// <returns></returns>
-		public Task<TaskResult> Completion()
+		// ReSharper disable once UnusedMethodReturnValue.Global
+		public async Task<TaskResult> Completion()
 		{
-			return this.taskCompletionSource.Task;
+			return await this.taskCompletionSource.Task.ConfigureAwait(false);
 		}
 
 		/// <summary>
-		/// Complete task execution
+		/// Bind executing task
 		/// </summary>
-		/// <param name="taskResult"></param>
-		internal void Complete(TaskCompletionStatus taskResult)
+		/// <param name="executingTask"></param>
+		public void BindTask(Task<TaskCompletionStatus> executingTask)
 		{
-			this.outputter.Complete();
-			this.taskCompletionSource.SetResult(new TaskResult(this.Name, this.DisplayName, taskResult, this.OutputReader));
+			executingTask.ContinueWith(task =>
+			{
+				// Complete Outputter
+				this.outputter.Complete();
+				
+				// Should happen only on system failure; Tyml Task should not throw => so delegate this throw, it's maybe important.
+				if (task.IsFaulted)
+				{
+					this.taskCompletionSource.TrySetException(task.Exception ?? new Exception("Unknown Tyml task failure."));
+					return;
+				}
+
+				// Delegate cancellation
+				if (task.IsCanceled)
+				{
+					this.taskCompletionSource.TrySetCanceled();
+					return;
+				}
+				
+				this.taskCompletionSource.SetResult(new TaskResult(this.Name, this.DisplayName, task.Result, this.OutputReader));
+			});
 		}
 	}
 }

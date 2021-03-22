@@ -7,7 +7,7 @@ namespace RJDev.Tyml.Core.Tasks
 		/// <summary>
 		/// Display name of task
 		/// </summary>
-		public string DisplayName { get; }
+		public string? DisplayName { get; }
 
 		/// <summary>
 		/// Name identifier of task
@@ -31,7 +31,7 @@ namespace RJDev.Tyml.Core.Tasks
 		/// <param name="displayName"></param>
 		/// <param name="taskCompletionStatus"></param>
 		/// <param name="outputReader"></param>
-		public TaskResult(string name, string displayName, TaskCompletionStatus taskCompletionStatus, OutputReader outputReader)
+		public TaskResult(string name, string? displayName, TaskCompletionStatus taskCompletionStatus, OutputReader outputReader)
 		{
 			this.Name = name;
 			this.DisplayName = displayName;

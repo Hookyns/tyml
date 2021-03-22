@@ -22,9 +22,8 @@ namespace RJDev.Tyml.Core
 				throw new InvalidOperationException($"Working directory not specified in {nameof(TymlContext)}");
 			}
 
-			var tasks = GetTasks(taskTypes);
-
-			return new TymlContext(tasks, this.workingDirectory, this.baseVariables ?? new(0));
+			Dictionary<string, TaskInfo> tasks = GetTasks(this.taskTypes);
+			return new TymlContext(tasks, this.workingDirectory, this.baseVariables);
 		}
 
 		/// <summary>
@@ -43,6 +42,7 @@ namespace RJDev.Tyml.Core
 		/// </summary>
 		/// <param name="taskTypes"></param>
 		/// <returns></returns>
+		// ReSharper disable once ParameterHidesMember
 		public TymlContextBuilder AddTasks(params Type[] taskTypes)
 		{
 			this.taskTypes.AddRange(taskTypes);
@@ -54,6 +54,7 @@ namespace RJDev.Tyml.Core
 		/// </summary>
 		/// <param name="workingDirectory"></param>
 		/// <returns></returns>
+		// ReSharper disable once ParameterHidesMember
 		public TymlContextBuilder UseWorkingDirectory(string workingDirectory)
 		{
 			this.workingDirectory = workingDirectory;
@@ -79,6 +80,7 @@ namespace RJDev.Tyml.Core
 		/// <param name="baseVariables"></param>
 		/// <returns></returns>
 		/// <remarks>Replace existing variables or add new variables.</remarks>
+		// ReSharper disable once ParameterHidesMember
 		public TymlContextBuilder WithBaseVariables(Dictionary<string, object> baseVariables)
 		{
 			foreach ((string name, object value) in baseVariables)
