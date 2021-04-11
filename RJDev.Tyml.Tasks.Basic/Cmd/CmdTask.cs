@@ -1,7 +1,9 @@
+using System;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
+using RJDev.Outputter;
 using RJDev.Tyml.Core;
 using RJDev.Tyml.Core.Tasks;
 
@@ -10,11 +12,22 @@ namespace RJDev.Tyml.Tasks.Basic.Cmd
 	[TymlTask("Cmd")]
 	public class CmdTask : TaskBase<CmdInputs>
 	{
+		private class State
+		{
+			public bool error;
+		}
+
 		protected override Task<TaskCompletionStatus> Execute(TaskContext context, CmdInputs inputs, CancellationToken _)
 		{
-			Process cmd = ExecutePlatformCmd(context, inputs);
+			State state = new();
+			Process cmd = ExecutePlatformCmd(context, inputs, state);
 			cmd.WaitForExit();
-			context.Out.WriteLine(cmd.StandardOutput.ReadToEnd());
+
+			if (cmd.ExitCode != 0 || state.error)
+			{
+				return this.ErrorSync();
+			}
+
 			return this.OkSync();
 		}
 
@@ -23,10 +36,34 @@ namespace RJDev.Tyml.Tasks.Basic.Cmd
 		/// </summary>
 		/// <param name="context"></param>
 		/// <param name="inputs"></param>
+		/// <param name="state"></param>
 		/// <returns></returns>
-		private static Process ExecutePlatformCmd(TaskContext context, CmdInputs inputs)
+		private static Process ExecutePlatformCmd(TaskContext context, CmdInputs inputs, State state)
 		{
 			Process cmd = GetBaseProcess(context);
+
+			cmd.ErrorDataReceived += (_, args) =>
+			{
+				context.Out.WriteLine(args.Data, EntryType.Error);
+
+				if (inputs.FailOnStdError)
+				{
+					state.error = true;
+					
+					try
+					{
+						cmd.Kill();
+					}
+					catch (NotSupportedException)
+					{
+					}
+					catch (InvalidOperationException)
+					{
+					}
+				}
+			};
+
+			cmd.OutputDataReceived += (_, args) => { context.Out.WriteLine(args.Data); };
 
 			if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
 			{
