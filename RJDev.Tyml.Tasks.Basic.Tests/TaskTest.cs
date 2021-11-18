@@ -212,5 +212,32 @@ steps:
 				Assert.Equal(TaskCompletionStatus.Ok, result.Status);
 			}
 		}
+
+		[Fact]
+		public async Task CmdFailed()
+		{
+			IServiceProvider serviceProvider = GetServiceProvider();
+			TymlContext context = GetContext();
+			TymlExecutor executor = serviceProvider.GetRequiredService<TymlExecutor>();
+
+			string yaml = @"
+steps:
+  - task: DownloadFile
+    displayName: 'Download 5 MB test file'
+    inputs:
+      Url: 'https://github.com/google/googletest/archive/refs/tags/release-1.10.0.zip'
+      Destination: non/existing/directory
+";
+
+			var cts = new CancellationTokenSource(TimeSpan.FromSeconds(10));
+			SimpleLambdaSink sink = new SimpleLambdaSink(entry => this.testOutputHelper.WriteLine(entry.ToString().TrimEnd()));
+
+			await foreach (TaskExecution execution in executor.Execute(context, yaml, cts.Token))
+			{
+				await execution.OutputReader.Pipe(sink);
+				TaskResult result = await execution.Completion();
+				Assert.Equal(TaskCompletionStatus.Ok, result.Status);
+			}
+		}
 	}
 }
