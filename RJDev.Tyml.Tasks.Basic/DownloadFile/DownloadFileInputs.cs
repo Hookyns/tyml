@@ -15,5 +15,10 @@ namespace RJDev.Tyml.Tasks.Basic.DownloadFile
 		/// </summary>
 		[Required]
 		public string Destination { get; set; } = null!;
+
+		/// <summary>
+		/// Target file name
+		/// </summary>
+		public string? FileName { get; set; }
 	}
 }

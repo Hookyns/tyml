@@ -57,7 +57,10 @@ namespace RJDev.Tyml.Tasks.Basic.DownloadFile
 				// Ensure destination directory
 				if (Path.GetDirectoryName(destination) is string destinationDirectory)
 				{
-					Directory.CreateDirectory(destinationDirectory);
+					if (!Directory.Exists(destinationDirectory))
+					{
+						Directory.CreateDirectory(destinationDirectory);
+					}
 				}
 
 				// Write into output
@@ -97,8 +100,10 @@ namespace RJDev.Tyml.Tasks.Basic.DownloadFile
 				destination = Path.GetFullPath(destination, context.TymlContext.WorkingDirectory);
 			}
 
+			string fileName = string.IsNullOrWhiteSpace(inputs.FileName) ? Path.GetFileName(fileUrl.LocalPath) : inputs.FileName;
+
 			// Add directory to destination path by input file name
-			destination = Path.Combine(destination, Path.GetFileName(fileUrl.LocalPath));
+			destination = Path.Combine(destination, fileName);
 
 			return destination;
 		}

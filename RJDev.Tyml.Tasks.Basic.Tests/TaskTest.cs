@@ -23,6 +23,11 @@ namespace RJDev.Tyml.Tasks.Basic.Tests
 			this.testOutputHelper = testOutputHelper;
 		}
 
+		protected IOutputterSink GetTestOutputSink()
+		{
+			return new SimpleLambdaSink(entry => this.testOutputHelper.WriteLine(entry.ToString().TrimEnd('\r', '\n')));
+		}
+
 		[Fact]
 		public async Task CmdTaskTest()
 		{
@@ -38,11 +43,11 @@ steps:
       Script: 'echo Hello Tyml!'
 ";
 
-			SimpleLambdaSink sink = new SimpleLambdaSink(entry => this.testOutputHelper.WriteLine(entry.ToString()));
+			IOutputterSink outSink = this.GetTestOutputSink();
 
 			await foreach (TaskExecution execution in executor.Execute(context, yaml))
 			{
-				await execution.OutputReader.Pipe(sink);
+				await execution.OutputReader.Pipe(outSink);
 				await execution.Completion();
 			}
 		}
@@ -64,11 +69,11 @@ steps:
       Overwrite: true
 ";
 
-			SimpleLambdaSink sink = new SimpleLambdaSink(entry => this.testOutputHelper.WriteLine(entry.ToString()));
+			IOutputterSink outSink = this.GetTestOutputSink();
 
 			await foreach (TaskExecution execution in executor.Execute(context, yaml))
 			{
-				await execution.OutputReader.Pipe(sink);
+				await execution.OutputReader.Pipe(outSink);
 				await execution.Completion();
 			}
 		}
@@ -95,11 +100,11 @@ steps:
       Overwrite: true
 ";
 
-			SimpleLambdaSink sink = new SimpleLambdaSink(entry => this.testOutputHelper.WriteLine(entry.ToString()));
+			IOutputterSink outSink = this.GetTestOutputSink();
 
 			await foreach (TaskExecution execution in executor.Execute(context, yaml))
 			{
-				await execution.OutputReader.Pipe(sink);
+				await execution.OutputReader.Pipe(outSink);
 				TaskResult result = await execution.Completion();
 				Assert.Equal(TaskCompletionStatus.Ok, result.Status);
 			}
@@ -139,23 +144,22 @@ steps:
 
 			StringBuilder sb = new();
 			SimpleLambdaSink sink = new(entry => sb.Append(entry));
+			IOutputterSink outSink = this.GetTestOutputSink();
 
 			await foreach (TaskExecution execution in executor.Execute(context, yaml))
 			{
-				await execution.OutputReader.Pipe(sink);
+				await execution.OutputReader.Pipe(sink).Pipe(outSink);
 				await execution.Completion();
+			}
 
-				string workDir = Path.Combine(Directory.GetCurrentDirectory(), "work-dir");
-
-				// Output contains PWD
-				if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-				{
-					Assert.Contains(pwdCmd + Environment.NewLine + workDir + Environment.NewLine, sb.ToString());
-				}
-				else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
-				{
-					Assert.Contains(pwdCmd + Environment.NewLine + "bash: " + workDir + ":", sb.ToString());
-				}
+			// Output contains PWD
+			if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+			{
+				Assert.Contains(pwdCmd + Environment.NewLine + context.WorkingDirectory + Environment.NewLine, sb.ToString());
+			}
+			else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+			{
+				Assert.Contains(pwdCmd + Environment.NewLine + "bash: " + context.WorkingDirectory + ":", sb.ToString());
 			}
 		}
 
@@ -176,14 +180,44 @@ steps:
 ";
 
 			var cts = new CancellationTokenSource(TimeSpan.FromSeconds(10));
-			SimpleLambdaSink sink = new SimpleLambdaSink(entry => this.testOutputHelper.WriteLine(entry.ToString().TrimEnd('\r', '\n')));
+			IOutputterSink outSink = this.GetTestOutputSink();
 
 			await foreach (TaskExecution execution in executor.Execute(context, yaml, cts.Token))
 			{
-				await execution.OutputReader.Pipe(sink);
+				await execution.OutputReader.Pipe(outSink);
 				TaskResult result = await execution.Completion();
 				Assert.Equal(TaskCompletionStatus.Ok, result.Status);
 			}
+		}
+
+		[Fact]
+		public async Task DownloadTasksTest_FileName()
+		{
+			IServiceProvider serviceProvider = GetServiceProvider();
+			TymlContext context = GetContext();
+			TymlExecutor executor = serviceProvider.GetRequiredService<TymlExecutor>();
+
+			string yaml = @"
+steps:
+  - task: DownloadFile
+    displayName: 'Download 5 MB test file'
+    inputs:
+      Url: 'http://212.183.159.230/5MB.zip'
+      Destination: './'
+      FileName: 'test_file-name.zip'
+";
+
+			var cts = new CancellationTokenSource(TimeSpan.FromSeconds(10));
+			IOutputterSink outSink = this.GetTestOutputSink();
+
+			await foreach (TaskExecution execution in executor.Execute(context, yaml, cts.Token))
+			{
+				await execution.OutputReader.Pipe(outSink);
+				TaskResult result = await execution.Completion();
+				Assert.Equal(TaskCompletionStatus.Ok, result.Status);
+			}
+			
+			Assert.True(File.Exists(Path.Join(context.WorkingDirectory, "test_file-name.zip")));
 		}
 
 		[Fact]
@@ -203,11 +237,11 @@ steps:
 ";
 
 			var cts = new CancellationTokenSource(TimeSpan.FromSeconds(10));
-			SimpleLambdaSink sink = new SimpleLambdaSink(entry => this.testOutputHelper.WriteLine(entry.ToString().TrimEnd()));
+			IOutputterSink outSink = this.GetTestOutputSink();
 
 			await foreach (TaskExecution execution in executor.Execute(context, yaml, cts.Token))
 			{
-				await execution.OutputReader.Pipe(sink);
+				await execution.OutputReader.Pipe(outSink);
 				TaskResult result = await execution.Completion();
 				Assert.Equal(TaskCompletionStatus.Ok, result.Status);
 			}
@@ -230,11 +264,11 @@ steps:
 ";
 
 			var cts = new CancellationTokenSource(TimeSpan.FromSeconds(10));
-			SimpleLambdaSink sink = new SimpleLambdaSink(entry => this.testOutputHelper.WriteLine(entry.ToString().TrimEnd()));
+			IOutputterSink outSink = this.GetTestOutputSink();
 
 			await foreach (TaskExecution execution in executor.Execute(context, yaml, cts.Token))
 			{
-				await execution.OutputReader.Pipe(sink);
+				await execution.OutputReader.Pipe(outSink);
 				TaskResult result = await execution.Completion();
 				Assert.Equal(TaskCompletionStatus.Ok, result.Status);
 			}
