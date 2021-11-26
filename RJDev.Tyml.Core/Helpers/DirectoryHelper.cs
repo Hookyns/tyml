@@ -1,7 +1,7 @@
 using System;
 using System.IO;
 
-namespace RJDev.Tyml.Core
+namespace RJDev.Tyml.Core.Helpers
 {
 	public static class DirectoryHelper
 	{
