@@ -28,7 +28,7 @@ namespace RJDev.Tyml.Core
 		internal TymlContext(IDictionary<string, TaskInfo> tasks, string workingDirectory, IDictionary<string, object> baseVariables)
 		{
 			this.tasks = tasks;
-			this.WorkingDirectory = DirectoryHelper.NormalizeWorkingDirectory(workingDirectory);
+			this.WorkingDirectory = DirectoryHelper.NormalizeDirectory(workingDirectory);
 			this.BaseVariables = baseVariables;
 		}
 
