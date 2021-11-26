@@ -49,6 +49,35 @@ steps:
 		}
 
 		[Fact]
+		public async Task EmptyVariablesTest()
+		{
+			IServiceProvider serviceProvider = GetServiceProvider();
+			TymlContext context = GetContext();
+			TymlExecutor executor = serviceProvider.GetRequiredService<TymlExecutor>();
+			
+			string yaml = @"
+variables:
+steps:
+  - task: Cmd
+    displayName: 'Echo the most important message'
+    inputs:
+      Script: 'echo $(lipsum)!'
+";
+			try
+			{
+				await foreach (TaskExecution execution in executor.Execute(context, yaml))
+				{
+					await execution.Completion();
+				}
+				Assert.True(true);
+			}
+			catch (Exception)
+			{
+				Assert.True(false);
+			}
+		}
+
+		[Fact]
 		public async Task AbortTaskTest()
 		{
 			IServiceProvider serviceProvider = GetServiceProvider();

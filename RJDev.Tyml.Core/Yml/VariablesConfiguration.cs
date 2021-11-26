@@ -4,9 +4,15 @@ namespace RJDev.Tyml.Core.Yml
 {
 	public class VariablesConfiguration
 	{
+		private Dictionary<string, object> variables = new(0);
+
 		/// <summary>
 		/// List of variables
 		/// </summary>
-		public Dictionary<string, object> Variables { get; set; } = new(0);
+		public Dictionary<string, object> Variables
+		{
+			get => this.variables;
+			set => this.variables = (Dictionary<string, object>?)value ?? new Dictionary<string, object>(0);
+		}
 	}
 }
