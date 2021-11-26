@@ -1,6 +1,8 @@
 using System;
 using System.Diagnostics;
+using System.Globalization;
 using System.Runtime.InteropServices;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using RJDev.Outputter;
@@ -17,10 +19,19 @@ namespace RJDev.Tyml.Tasks.Basic.Cmd
 			public bool error;
 		}
 
-		protected override Task<TaskCompletionStatus> Execute(TaskContext context, CmdInputs inputs, CancellationToken _)
+		protected override Task<TaskCompletionStatus> Execute(TaskContext context, CmdInputs inputs, CancellationToken cancellationToken)
 		{
 			State state = new();
 			Process cmd = ExecutePlatformCmd(context, inputs, state);
+
+			cancellationToken.Register(() =>
+			{
+				cmd.Kill(true);
+			});
+			
+			cmd.BeginOutputReadLine();
+			cmd.BeginErrorReadLine();
+			
 			cmd.WaitForExit();
 
 			if (cmd.ExitCode != 0 || state.error)
@@ -121,6 +132,24 @@ namespace RJDev.Tyml.Tasks.Basic.Cmd
 			cmd.StartInfo.RedirectStandardInput = true;
 			cmd.StartInfo.RedirectStandardOutput = true;
 			cmd.StartInfo.RedirectStandardError = true;
+
+			// Try to set right encoding. If it is not available, ignore.
+			// System.Text.Encoding.CodePages package may be required.
+			// System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
+			try
+			{
+				Encoding encoding = Encoding.GetEncoding(CultureInfo.CurrentCulture.TextInfo.OEMCodePage);
+
+				cmd.StartInfo.StandardOutputEncoding = encoding;
+				cmd.StartInfo.StandardErrorEncoding = encoding;
+			}
+			catch (ArgumentException)
+			{
+			}
+			catch (NotSupportedException)
+			{
+			}
+
 			return cmd;
 		}
 	}
