@@ -53,12 +53,13 @@ namespace RJDev.Tyml.Tasks.Basic.CopyFiles
 		{
 			foreach (string file in files)
 			{
-				if (excludes.Any(excludePattern => FileSystemName.MatchesSimpleExpression(excludePattern, file.Replace("\\", "/"), ignoreCase: true)))
+				string pathFromRoot = Path.GetRelativePath(sourceFolder, file);
+				
+				if (excludes.Any(excludePattern => FileSystemName.MatchesSimpleExpression(excludePattern, pathFromRoot.Replace("\\", "/"), ignoreCase: true)))
 				{
 					continue;
 				}
 
-				string pathFromRoot = Path.GetRelativePath(sourceFolder, file);
 				string targetFilePath = Path.GetFullPath(new Uri(Path.Combine(destination, pathFromRoot)).LocalPath);
 				string fileDirectory = Path.GetDirectoryName(targetFilePath) ?? throw new Exception("Invalid path. Unable to get directory name.");
 
@@ -81,7 +82,7 @@ namespace RJDev.Tyml.Tasks.Basic.CopyFiles
 			{
 				string pathFromRoot = Path.GetRelativePath(sourceFolder, directory);
 
-				if (excludes.Any(excludePattern => FileSystemName.MatchesSimpleExpression(excludePattern, pathFromRoot, ignoreCase: true)))
+				if (excludes.Any(excludePattern => FileSystemName.MatchesSimpleExpression(excludePattern, pathFromRoot.Replace("\\", "/"), ignoreCase: true)))
 				{
 					continue;
 				}

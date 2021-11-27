@@ -40,8 +40,8 @@ steps:
       Contents: |-
         *
         !nope
-        !*.rtf
-        !*/nope.*
+        !*.rt?
+        !nope.*
       TargetFolder: ./copy
       Overwrite: true
 ";

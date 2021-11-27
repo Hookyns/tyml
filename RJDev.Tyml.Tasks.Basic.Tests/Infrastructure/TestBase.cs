@@ -5,6 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using RJDev.Tyml.Core;
 using RJDev.Tyml.Tasks.Basic.Cmd;
 using RJDev.Tyml.Tasks.Basic.CopyFiles;
+using RJDev.Tyml.Tasks.Basic.DeleteFiles;
 using RJDev.Tyml.Tasks.Basic.DownloadFile;
 using RJDev.Tyml.Tasks.Basic.ExtractFile;
 
@@ -27,14 +28,20 @@ namespace RJDev.Tyml.Tasks.Basic.Tests.Infrastructure
 			Directory.CreateDirectory(workingDirectory);
 
 			return new TymlContextBuilder()
-				.AddTasks(typeof(CmdTask), typeof(ExtractFilesTask), typeof(DownloadFileTask), typeof(CopyFilesTask))
+				.AddTasks(
+					typeof(CmdTask),
+					typeof(ExtractFilesTask),
+					typeof(DownloadFileTask),
+					typeof(CopyFilesTask),
+					typeof(DeleteFilesTask)
+				)
 				.UseWorkingDirectory(workingDirectory)
 				.WithBaseVariables(new Dictionary<string, object>()
 				{
-					{"foo", 5},
-					{"bar", "string"},
-					{"lipsum", "Lorem Ipsum dolor sit amet."},
-					{"assemblyVersion", typeof(TestBase).Assembly.GetName().Version?.ToString() ?? string.Empty},
+					{ "foo", 5 },
+					{ "bar", "string" },
+					{ "lipsum", "Lorem Ipsum dolor sit amet." },
+					{ "assemblyVersion", typeof(TestBase).Assembly.GetName().Version?.ToString() ?? string.Empty },
 				})
 				.Build();
 		}
@@ -52,6 +59,7 @@ namespace RJDev.Tyml.Tasks.Basic.Tests.Infrastructure
 			collection.AddTransient<ExtractFilesTask>();
 			collection.AddTransient<DownloadFileTask>();
 			collection.AddTransient<CopyFilesTask>();
+			collection.AddTransient<DeleteFilesTask>();
 
 			ServiceProvider provider = collection.BuildServiceProvider();
 			return provider;
