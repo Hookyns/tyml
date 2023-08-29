@@ -25,7 +25,7 @@ namespace RJDev.Tyml.Core.Tasks
 		/// <returns></returns>
 		public Task<TaskCompletionStatus> Execute(TaskContext context, IDictionary inputs, CancellationToken cancellationToken)
 		{
-			return this.Execute(context, (TInputs) ConfigurationParseHelper.GetObject(inputs, typeof(TInputs)), cancellationToken);
+			return Execute(context, (TInputs)ConfigurationParseHelper.GetObject(inputs, typeof(TInputs)), cancellationToken);
 		}
 
 		/// <summary>
@@ -54,7 +54,7 @@ namespace RJDev.Tyml.Core.Tasks
 		{
 			return CompletedTaskResults.CompletedOk;
 		}
-		
+
 		/// <summary>
 		/// Returns Error status
 		/// </summary>

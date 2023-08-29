@@ -25,7 +25,7 @@ namespace RJDev.Tyml.Tasks.Basic.Tests
 
 		protected IOutputterSink GetTestOutputSink()
 		{
-			return new SimpleLambdaSink(entry => this.testOutputHelper.WriteLine(entry.ToString().TrimEnd('\r', '\n')));
+			return new SimpleLambdaSink(entry => testOutputHelper.WriteLine(entry.ToString().TrimEnd('\r', '\n')));
 		}
 
 		[Fact]
@@ -43,7 +43,7 @@ steps:
       Script: 'echo Hello Tyml!'
 ";
 
-			IOutputterSink outSink = this.GetTestOutputSink();
+			IOutputterSink outSink = GetTestOutputSink();
 
 			await foreach (TaskExecution execution in executor.Execute(context, yaml))
 			{
@@ -69,7 +69,7 @@ steps:
       Overwrite: true
 ";
 
-			IOutputterSink outSink = this.GetTestOutputSink();
+			IOutputterSink outSink = GetTestOutputSink();
 
 			await foreach (TaskExecution execution in executor.Execute(context, yaml))
 			{
@@ -100,7 +100,7 @@ steps:
       Overwrite: true
 ";
 
-			IOutputterSink outSink = this.GetTestOutputSink();
+			IOutputterSink outSink = GetTestOutputSink();
 
 			await foreach (TaskExecution execution in executor.Execute(context, yaml))
 			{
@@ -144,7 +144,7 @@ steps:
 
 			StringBuilder sb = new();
 			SimpleLambdaSink sink = new(entry => sb.Append(entry));
-			IOutputterSink outSink = this.GetTestOutputSink();
+			IOutputterSink outSink = GetTestOutputSink();
 
 			await foreach (TaskExecution execution in executor.Execute(context, yaml))
 			{
@@ -173,14 +173,14 @@ steps:
 			string yaml = @"
 steps:
   - task: DownloadFile
-    displayName: 'Download 5 MB test file'
+    displayName: 'Download test file'
     inputs:
-      Url: 'http://212.183.159.230/5MB.zip'
+      Url: 'https://github.com/google/googletest/archive/refs/tags/release-1.10.0.zip'
       Destination: './'
 ";
 
 			var cts = new CancellationTokenSource(TimeSpan.FromSeconds(10));
-			IOutputterSink outSink = this.GetTestOutputSink();
+			IOutputterSink outSink = GetTestOutputSink();
 
 			await foreach (TaskExecution execution in executor.Execute(context, yaml, cts.Token))
 			{
@@ -200,15 +200,15 @@ steps:
 			string yaml = @"
 steps:
   - task: DownloadFile
-    displayName: 'Download 5 MB test file'
+    displayName: 'Download test file'
     inputs:
-      Url: 'http://212.183.159.230/5MB.zip'
+      Url: 'https://github.com/google/googletest/archive/refs/tags/release-1.10.0.zip'
       Destination: './'
       FileName: 'test_file-name.zip'
 ";
 
 			var cts = new CancellationTokenSource(TimeSpan.FromSeconds(10));
-			IOutputterSink outSink = this.GetTestOutputSink();
+			IOutputterSink outSink = GetTestOutputSink();
 
 			await foreach (TaskExecution execution in executor.Execute(context, yaml, cts.Token))
 			{
@@ -230,14 +230,14 @@ steps:
 			string yaml = @"
 steps:
   - task: DownloadFile
-    displayName: 'Download 5 MB test file'
+    displayName: 'Download test file'
     inputs:
       Url: 'https://github.com/google/googletest/archive/refs/tags/release-1.10.0.zip'
       Destination: non/existing/directory
 ";
 
 			var cts = new CancellationTokenSource(TimeSpan.FromSeconds(10));
-			IOutputterSink outSink = this.GetTestOutputSink();
+			IOutputterSink outSink = GetTestOutputSink();
 
 			await foreach (TaskExecution execution in executor.Execute(context, yaml, cts.Token))
 			{
@@ -257,14 +257,14 @@ steps:
 			string yaml = @"
 steps:
   - task: DownloadFile
-    displayName: 'Download 5 MB test file'
+    displayName: 'Download test file'
     inputs:
       Url: 'https://github.com/google/googletest/archive/refs/tags/release-1.10.0.zip'
       Destination: non/existing/directory
 ";
 
 			var cts = new CancellationTokenSource(TimeSpan.FromSeconds(10));
-			IOutputterSink outSink = this.GetTestOutputSink();
+			IOutputterSink outSink = GetTestOutputSink();
 
 			await foreach (TaskExecution execution in executor.Execute(context, yaml, cts.Token))
 			{

@@ -9,7 +9,7 @@ namespace RJDev.Tyml.Core.Tasks
 		/// YAML variables.
 		/// </summary>
 		private readonly IDictionary<string, object> variables;
-		
+
 		/// <summary>
 		/// Root YAML context object.
 		/// </summary>
@@ -32,12 +32,17 @@ namespace RJDev.Tyml.Core.Tasks
 		/// <param name="variables"></param>
 		/// <param name="taskInfo"></param>
 		/// <param name="outputWriter"></param>
-		public TaskContext(TymlContext tymlContext, IDictionary<string, object> variables, TaskInfo taskInfo, OutputWriter outputWriter)
+		public TaskContext(
+			TymlContext tymlContext,
+			IDictionary<string, object> variables,
+			TaskInfo taskInfo,
+			OutputWriter outputWriter
+		)
 		{
 			this.variables = variables;
-			this.TymlContext = tymlContext;
-			this.TaskInfo = taskInfo;
-			this.Out = outputWriter;
+			TymlContext = tymlContext;
+			TaskInfo = taskInfo;
+			Out = outputWriter;
 		}
 
 		/// <summary>
@@ -50,12 +55,12 @@ namespace RJDev.Tyml.Core.Tasks
 		/// <returns></returns>
 		public object? GetVariable(string variableName)
 		{
-			if (this.variables.TryGetValue(variableName, out object? variable))
+			if (variables.TryGetValue(variableName, out object? variable))
 			{
 				return variable;
 			}
 
-			return this.TymlContext.GetVariable(variableName);
+			return TymlContext.GetVariable(variableName);
 		}
 	}
 }

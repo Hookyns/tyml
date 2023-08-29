@@ -22,7 +22,7 @@ namespace RJDev.Tyml.Tasks.Basic.Tests
 
 		protected IOutputterSink GetTestOutputSink()
 		{
-			return new SimpleLambdaSink(entry => this.testOutputHelper.WriteLine(entry.ToString().TrimEnd('\r', '\n')));
+			return new SimpleLambdaSink(entry => testOutputHelper.WriteLine(entry.ToString().TrimEnd('\r', '\n')));
 		}
 		
 		[Fact]
@@ -55,7 +55,7 @@ steps:
 
 ";
 
-			IOutputterSink sink = this.GetTestOutputSink();
+			IOutputterSink sink = GetTestOutputSink();
 
 			await foreach (TaskExecution execution in executor.Execute(context, yaml))
 			{

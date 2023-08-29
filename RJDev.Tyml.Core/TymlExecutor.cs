@@ -23,7 +23,7 @@ namespace RJDev.Tyml.Core
 		public TymlExecutor(IServiceProvider serviceProvider)
 		{
 			this.serviceProvider = serviceProvider;
-			this.parser = new Parser();
+			parser = new Parser();
 		}
 
 		/// <summary>
@@ -35,8 +35,8 @@ namespace RJDev.Tyml.Core
 		/// <exception cref="InvalidOperationException"></exception>
 		public TymlExecution Execute(TymlContext context, string ymlContent, CancellationToken cancellationToken = default)
 		{
-			RootConfiguration config = this.parser.Parse(ymlContent, context);
-			return new TymlExecution(this.serviceProvider, context, config, cancellationToken);
+			RootConfiguration config = parser.Parse(ymlContent, context);
+			return new TymlExecution(serviceProvider, context, config, cancellationToken);
 		}
 	}
 }

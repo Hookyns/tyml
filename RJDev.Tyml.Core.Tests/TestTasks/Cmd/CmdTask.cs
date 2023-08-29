@@ -14,7 +14,7 @@ namespace RJDev.Tyml.Core.Tests.TestTasks.Cmd
 			Process cmd = ExecutePlatformCmd(inputs);
 			cmd.WaitForExit();
 			context.Out.WriteLine(cmd.StandardOutput.ReadToEnd());
-			return this.OkSync();
+			return OkSync();
 		}
 
 		/// <summary>

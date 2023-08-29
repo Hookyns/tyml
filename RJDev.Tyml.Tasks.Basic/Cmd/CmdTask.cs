@@ -26,7 +26,7 @@ namespace RJDev.Tyml.Tasks.Basic.Cmd
 
 			cancellationToken.Register(() =>
 			{
-				cmd.Kill(true);
+				cmd.Kill();
 			});
 			
 			cmd.BeginOutputReadLine();
@@ -36,10 +36,10 @@ namespace RJDev.Tyml.Tasks.Basic.Cmd
 
 			if (cmd.ExitCode != 0 || state.error)
 			{
-				return this.ErrorSync();
+				return ErrorSync();
 			}
 
-			return this.OkSync();
+			return OkSync();
 		}
 
 		/// <summary>

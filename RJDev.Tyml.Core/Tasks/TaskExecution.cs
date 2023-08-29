@@ -24,12 +24,12 @@ namespace RJDev.Tyml.Core.Tasks
 		/// <summary>
 		/// Instance of output writer.
 		/// </summary>
-		internal OutputWriter OutputWriter => this.outputter.OutputWriter;
+		internal OutputWriter OutputWriter => outputter.OutputWriter;
 
 		/// <summary>
 		/// Instance of output reader.
 		/// </summary>
-		public OutputReader OutputReader => this.outputter.OutputReader;
+		public OutputReader OutputReader => outputter.OutputReader;
 
 		/// <summary>
 		/// Ctor
@@ -38,14 +38,14 @@ namespace RJDev.Tyml.Core.Tasks
 		/// <param name="cancellationToken"></param>
 		public TaskExecution(TaskConfiguration step, CancellationToken cancellationToken)
 		{
-			this.Name = step.Task;
-			this.DisplayName = step.DisplayName;
-			this.outputter = new Outputter.Outputter(cancellationToken);
+			Name = step.Task;
+			DisplayName = step.DisplayName;
+			outputter = new Outputter.Outputter(cancellationToken);
 
 			cancellationToken.Register(() =>
 			{
-				this.outputter.Complete();
-				this.taskCompletionSource.TrySetCanceled();
+				outputter.Complete();
+				taskCompletionSource.TrySetCanceled();
 			});
 		}
 
@@ -56,7 +56,7 @@ namespace RJDev.Tyml.Core.Tasks
 		// ReSharper disable once UnusedMethodReturnValue.Global
 		public async Task<TaskResult> Completion()
 		{
-			return await this.taskCompletionSource.Task.ConfigureAwait(false);
+			return await taskCompletionSource.Task.ConfigureAwait(false);
 		}
 
 		/// <summary>
@@ -68,23 +68,23 @@ namespace RJDev.Tyml.Core.Tasks
 			executingTask.ContinueWith(task =>
 			{
 				// Complete Outputter
-				this.outputter.Complete();
-				
+				outputter.Complete();
+
 				// Should happen only on system failure; Tyml Task should not throw => so delegate this throw, it's maybe important.
 				if (task.IsFaulted)
 				{
-					this.taskCompletionSource.TrySetException(task.Exception ?? new Exception("Unknown Tyml task failure."));
+					taskCompletionSource.TrySetException(task.Exception ?? new Exception("Unknown Tyml task failure."));
 					return;
 				}
 
 				// Delegate cancellation
 				if (task.IsCanceled)
 				{
-					this.taskCompletionSource.TrySetCanceled();
+					taskCompletionSource.TrySetCanceled();
 					return;
 				}
-				
-				this.taskCompletionSource.SetResult(new TaskResult(this.Name, this.DisplayName, task.Result, this.OutputReader));
+
+				taskCompletionSource.SetResult(new TaskResult(Name, DisplayName, task.Result, OutputReader));
 			});
 		}
 	}

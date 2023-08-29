@@ -12,7 +12,7 @@ namespace RJDev.Tyml.Executable
 		protected override Task<TaskCompletionStatus> Execute(TaskContext context, TestTaskConfig inputs, CancellationToken cancellationToken)
 		{
 			context.Out.WriteLine($"Script: {inputs.Script} with args: {string.Join("; ", inputs.Args.Select(entry => entry.Key + ":" + entry.Value))}");
-			return this.OkSync();
+			return OkSync();
 		}
 	}
 }

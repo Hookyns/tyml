@@ -30,13 +30,18 @@ namespace RJDev.Tyml.Core
 		/// <param name="context"></param>
 		/// <param name="rootConfiguration"></param>
 		/// <param name="cancellationToken"></param>
-		public TymlExecution(IServiceProvider serviceProvider, TymlContext context, RootConfiguration rootConfiguration, CancellationToken cancellationToken)
+		public TymlExecution(
+			IServiceProvider serviceProvider,
+			TymlContext context,
+			RootConfiguration rootConfiguration,
+			CancellationToken cancellationToken
+		)
 		{
 			this.rootConfiguration = rootConfiguration;
 			this.cancellationToken = cancellationToken;
-			
+
 			// Create task executor to run all the steps in YAML file
-			this.taskExecutor = new TaskExecutor(serviceProvider, context, this.rootConfiguration);
+			taskExecutor = new TaskExecutor(serviceProvider, context, this.rootConfiguration);
 		}
 
 		/// <summary>
@@ -46,16 +51,16 @@ namespace RJDev.Tyml.Core
 		/// <returns></returns>
 		public async IAsyncEnumerator<TaskExecution> GetAsyncEnumerator(CancellationToken enumeratorCancellationToken = default)
 		{
-			using CancellationTokenSource cts = CancellationTokenSource.CreateLinkedTokenSource(this.cancellationToken, enumeratorCancellationToken);
-			
-			foreach (TaskConfiguration step in this.rootConfiguration.Steps)
+			using CancellationTokenSource cts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, enumeratorCancellationToken);
+
+			foreach (TaskConfiguration step in rootConfiguration.Steps)
 			{
 				if (cts.Token.IsCancellationRequested)
 				{
 					yield break;
 				}
-				
-				TaskExecution execution = this.taskExecutor.Execute(step, cts.Token);
+
+				TaskExecution execution = taskExecutor.Execute(step, cts.Token);
 				yield return execution;
 				await execution.Completion();
 			}

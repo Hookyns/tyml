@@ -22,8 +22,8 @@ namespace RJDev.Tyml.Core
 		/// <param name="description"></param>
 		public TymlTaskAttribute(string name, string? description = null)
 		{
-			this.Name = name;
-			this.Description = description;
+			Name = name;
+			Description = description;
 		}
 	}
 }

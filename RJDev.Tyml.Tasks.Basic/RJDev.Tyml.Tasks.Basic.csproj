@@ -2,7 +2,7 @@
 
 	<PropertyGroup>
 		<PackageId>RJDev.Tyml.Tasks.Basic</PackageId>
-		<Version>2.3.0</Version>
+		<Version>2.4.0</Version>
 		<Authors>Roman Jámbor</Authors>
 		<Company>Roman Jámbor</Company>
 		<Description>Implementation of basic tasks for RJDev.Tyml.</Description>
@@ -16,7 +16,7 @@
 
 	<ItemGroup>
 		<PackageReference Include="Microsoft.Extensions.FileSystemGlobbing" Version="5.0.0" />
-		<PackageReference Include="RJDev.Tyml.Core" Version="2.1.4" />
+		<PackageReference Include="RJDev.Tyml.Core" Version="2.2.0" />
 	</ItemGroup>
 
 </Project>

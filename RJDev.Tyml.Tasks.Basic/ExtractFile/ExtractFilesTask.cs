@@ -36,11 +36,11 @@ namespace RJDev.Tyml.Tasks.Basic.ExtractFile
 					context.Out.WriteLine("Extraction of files failed.", EntryType.Error);
 					context.Out.WriteLine(ex.Message, EntryType.Error);
 					context.Out.WriteLine(ex.StackTrace ?? string.Empty, EntryType.Minor);
-					return this.ErrorSync();
+					return ErrorSync();
 				}
 			}
 
-			return this.OkSync();
+			return OkSync();
 		}
 
 		/// <summary>

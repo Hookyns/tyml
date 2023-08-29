@@ -21,8 +21,8 @@ namespace RJDev.Tyml.Core.Tasks
 		/// <param name="attribute"></param>
 		public TaskInfo(Type type, TymlTaskAttribute attribute)
 		{
-			this.Type = type;
-			this.Attribute = attribute;
+			Type = type;
+			Attribute = attribute;
 		}
 	}
 }

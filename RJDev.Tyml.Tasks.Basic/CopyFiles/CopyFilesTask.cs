@@ -26,10 +26,10 @@ namespace RJDev.Tyml.Tasks.Basic.CopyFiles
 
 			foreach (string pattern in includes)
 			{
-				this.Copy(pattern, excludes, inputs, context);
+				Copy(pattern, excludes, inputs, context);
 			}
 
-			return this.OkSync();
+			return OkSync();
 		}
 
 		private static string Normalize(string path)
@@ -45,8 +45,8 @@ namespace RJDev.Tyml.Tasks.Basic.CopyFiles
 			string[] files = Directory.GetFiles(sourceFolder, pattern);
 			string[] directories = Directory.GetDirectories(sourceFolder, pattern);
 
-			this.CopyFiles(files, excludes, sourceFolder, destination, inputs, context);
-			this.CopyDirectories(directories, excludes, sourceFolder, destination, inputs, context);
+			CopyFiles(files, excludes, sourceFolder, destination, inputs, context);
+			CopyDirectories(directories, excludes, sourceFolder, destination, inputs, context);
 		}
 
 		private void CopyFiles(string[] files, string[] excludes, string sourceFolder, string destination, CopyFilesInputs inputs, TaskContext context)
@@ -66,10 +66,10 @@ namespace RJDev.Tyml.Tasks.Basic.CopyFiles
 				context.Out.WriteLine($"Copy file {file}\n\tto {targetFilePath}");
 
 				// Check in memory, to prevent multiple IO operations
-				if (!this.ensuredTargetDirectories.Contains(file))
+				if (!ensuredTargetDirectories.Contains(file))
 				{
 					Directory.CreateDirectory(fileDirectory);
-					this.ensuredTargetDirectories.Add(fileDirectory);
+					ensuredTargetDirectories.Add(fileDirectory);
 				}
 
 				File.Copy(file, targetFilePath, inputs.Overwrite);
@@ -90,7 +90,7 @@ namespace RJDev.Tyml.Tasks.Basic.CopyFiles
 				string targetDirectoryPath = Path.GetFullPath(new Uri(Path.Combine(destination, pathFromRoot)).LocalPath);
 				context.Out.WriteLine($"Copy directory {directory}\n\tto {targetDirectoryPath}");
 				
-				this.CopyDirectory(directory, targetDirectoryPath, excludes, inputs);
+				CopyDirectory(directory, targetDirectoryPath, excludes, inputs);
 			}
 		}
 
@@ -108,7 +108,7 @@ namespace RJDev.Tyml.Tasks.Basic.CopyFiles
 
 			foreach (string directory in directories)
 			{
-				this.CopyDirectory(directory, Path.Join(targetDirectory, Path.GetFileName(directory)), excludes, inputs);
+				CopyDirectory(directory, Path.Join(targetDirectory, Path.GetFileName(directory)), excludes, inputs);
 			}
 		}
 	}

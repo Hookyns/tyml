@@ -14,7 +14,7 @@ namespace RJDev.Tyml.Core.Yml
 
 		public Parser()
 		{
-			this.deserializer = new DeserializerBuilder()
+			deserializer = new DeserializerBuilder()
 				.WithNamingConvention(CamelCaseNamingConvention.Instance)
 				.IgnoreUnmatchedProperties()
 				.Build();
@@ -28,8 +28,8 @@ namespace RJDev.Tyml.Core.Yml
 		/// <returns></returns>
 		public RootConfiguration Parse(string config, TymlContext tymlContext)
 		{
-			config = this.ProcessVariables(config, tymlContext);
-			return this.deserializer.Deserialize<RootConfiguration>(config);
+			config = ProcessVariables(config, tymlContext);
+			return deserializer.Deserialize<RootConfiguration>(config);
 		}
 
 		/// <summary>
@@ -41,7 +41,7 @@ namespace RJDev.Tyml.Core.Yml
 		/// <exception cref="InvalidOperationException"></exception>
 		private string ProcessVariables(string config, TymlContext tymlContext)
 		{
-			VariablesConfiguration variablesConfiguration = this.deserializer.Deserialize<VariablesConfiguration>(config);
+			VariablesConfiguration variablesConfiguration = deserializer.Deserialize<VariablesConfiguration>(config);
 
 			return Regex.Replace(
 				config,

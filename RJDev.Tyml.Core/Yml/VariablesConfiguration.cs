@@ -11,8 +11,8 @@ namespace RJDev.Tyml.Core.Yml
 		/// </summary>
 		public Dictionary<string, object> Variables
 		{
-			get => this.variables;
-			set => this.variables = (Dictionary<string, object>?)value ?? new Dictionary<string, object>(0);
+			get => variables;
+			set => variables = (Dictionary<string, object>?)value ?? new Dictionary<string, object>(0);
 		}
 	}
 }

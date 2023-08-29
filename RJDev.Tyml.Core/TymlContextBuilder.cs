@@ -17,13 +17,13 @@ namespace RJDev.Tyml.Core
 		/// <returns></returns>
 		public TymlContext Build()
 		{
-			if (this.workingDirectory == null)
+			if (workingDirectory == null)
 			{
 				throw new InvalidOperationException($"Working directory not specified in {nameof(TymlContext)}");
 			}
 
-			Dictionary<string, TaskInfo> tasks = GetTasks(this.taskTypes);
-			return new TymlContext(tasks, this.workingDirectory, this.baseVariables);
+			Dictionary<string, TaskInfo> tasks = GetTasks(taskTypes);
+			return new TymlContext(tasks, workingDirectory, baseVariables);
 		}
 
 		/// <summary>
@@ -33,7 +33,7 @@ namespace RJDev.Tyml.Core
 		/// <returns></returns>
 		public TymlContextBuilder AddTask(Type taskType)
 		{
-			this.taskTypes.Add(taskType);
+			taskTypes.Add(taskType);
 			return this;
 		}
 
@@ -70,7 +70,7 @@ namespace RJDev.Tyml.Core
 		/// <remarks>Replace existing variable or add new variable.</remarks>
 		public TymlContextBuilder WithBaseVariable(string name, object value)
 		{
-			this.baseVariables[name] = value;
+			baseVariables[name] = value;
 			return this;
 		}
 
@@ -87,6 +87,7 @@ namespace RJDev.Tyml.Core
 			{
 				this.baseVariables[name] = value;
 			}
+
 			return this;
 		}
 

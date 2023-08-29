@@ -28,8 +28,8 @@ namespace RJDev.Tyml.Core
 		internal TymlContext(IDictionary<string, TaskInfo> tasks, string workingDirectory, IDictionary<string, object> baseVariables)
 		{
 			this.tasks = tasks;
-			this.WorkingDirectory = DirectoryHelper.NormalizeDirectory(workingDirectory);
-			this.BaseVariables = baseVariables;
+			WorkingDirectory = DirectoryHelper.NormalizeDirectory(workingDirectory);
+			BaseVariables = baseVariables;
 		}
 
 		/// <summary>
@@ -42,7 +42,7 @@ namespace RJDev.Tyml.Core
 		/// <returns></returns>
 		public object? GetVariable(string variableName)
 		{
-			if (this.BaseVariables.TryGetValue(variableName, out object? variable))
+			if (BaseVariables.TryGetValue(variableName, out object? variable))
 			{
 				return variable;
 			}
@@ -58,7 +58,7 @@ namespace RJDev.Tyml.Core
 		/// <exception cref="InvalidOperationException"></exception>
 		internal TaskInfo GetTask(string taskName)
 		{
-			if (!this.tasks.TryGetValue(taskName.ToLower(), out TaskInfo? taskType))
+			if (!tasks.TryGetValue(taskName.ToLower(), out TaskInfo? taskType))
 			{
 				throw new InvalidOperationException($"YAML configuration contains unknown task '{taskName}'.");
 			}

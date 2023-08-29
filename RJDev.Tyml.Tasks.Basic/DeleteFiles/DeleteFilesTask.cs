@@ -20,10 +20,10 @@ namespace RJDev.Tyml.Tasks.Basic.DeleteFiles
 
 			foreach (string pattern in includes)
 			{
-				this.Delete(pattern, excludes, inputs, context);
+				Delete(pattern, excludes, inputs, context);
 			}
 
-			return this.OkSync();
+			return OkSync();
 		}
 
 		private static string Normalize(string path)
@@ -38,8 +38,8 @@ namespace RJDev.Tyml.Tasks.Basic.DeleteFiles
 			string[] files = Directory.GetFiles(sourceFolder, pattern);
 			string[] directories = Directory.GetDirectories(sourceFolder, pattern);
 
-			this.DeleteFiles(files, excludes, sourceFolder, context);
-			this.DeleteDirectories(directories, excludes, sourceFolder, inputs, context);
+			DeleteFiles(files, excludes, sourceFolder, context);
+			DeleteDirectories(directories, excludes, sourceFolder, inputs, context);
 		}
 
 		private void DeleteFiles(string[] files, string[] excludes, string sourceFolder, TaskContext context)

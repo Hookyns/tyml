@@ -33,10 +33,10 @@ namespace RJDev.Tyml.Core.Tasks
 		/// <exception cref="InvalidOperationException"></exception>
 		public TaskExecution Execute(TaskConfiguration step, CancellationToken cancellationToken)
 		{
-			TaskInfo taskInfo = this.context.GetTask(step.Task);
+			TaskInfo taskInfo = context.GetTask(step.Task);
 
 			// Get Task instance from ServiceProvider
-			if (this.serviceProvider.GetService(taskInfo.Type) is not ITask task)
+			if (serviceProvider.GetService(taskInfo.Type) is not ITask task)
 			{
 				throw new InvalidOperationException($"Required service '{taskInfo.Type.FullName}' not registered in service collection.");
 			}
@@ -45,7 +45,7 @@ namespace RJDev.Tyml.Core.Tasks
 			TaskExecution taskExecution = new(step, cancellationToken);
 
 			// Construct TaskContext
-			TaskContext taskContext = new(this.context, this.rootConfiguration.Variables, taskInfo, taskExecution.OutputWriter);
+			TaskContext taskContext = new(context, rootConfiguration.Variables, taskInfo, taskExecution.OutputWriter);
 
 			// Create executing task
 			Task<Task<TaskCompletionStatus>> executionTask = CreateExecutionTask(step, taskContext, task, cancellationToken);
@@ -85,10 +85,15 @@ namespace RJDev.Tyml.Core.Tasks
 		/// <param name="taskContext"></param>
 		/// <param name="task"></param>
 		/// <param name="cancellationToken"></param>
-		private static async Task<TaskCompletionStatus> ExecuteTaskWithLog(TaskConfiguration step, TaskContext taskContext, ITask task, CancellationToken cancellationToken)
+		private static async Task<TaskCompletionStatus> ExecuteTaskWithLog(
+			TaskConfiguration step,
+			TaskContext taskContext,
+			ITask task,
+			CancellationToken cancellationToken
+		)
 		{
 			string taskDisplayName = step.DisplayName ?? step.Task;
-			
+
 			// Starting
 			taskContext.Out.WriteLine($"Starting: {taskDisplayName}", EntryType.Success);
 			taskContext.Out.WriteLine("=".PadLeft(HrWidth, '='), EntryType.Minor);

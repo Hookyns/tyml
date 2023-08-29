@@ -86,8 +86,8 @@ namespace RJDev.Tyml.Core.Yml
 			{
 				// return Dictionary<string, string?>
 				return nestedObjectDictionary.ToDictionary(
-					x => (string) x.Key,
-					x => (string?) x.Value
+					x => (string)x.Key,
+					x => (string?)x.Value
 				);
 			}
 
@@ -96,14 +96,14 @@ namespace RJDev.Tyml.Core.Yml
 			{
 				// return Dictionary<string, object>
 				return nestedObjectDictionary.ToDictionary(
-					x => (string) x.Key,
+					x => (string)x.Key,
 					x => x.Value
 				);
 			}
 
 			// return Dictionary<string, T>
 			return nestedObjectDictionary.ToDictionary(
-				x => (string) x.Key,
+				x => (string)x.Key,
 				x => valueConverter.ConvertFrom(x.Value)
 			);
 		}
